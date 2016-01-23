@@ -6,11 +6,11 @@
 #include <SPI.h>
 int LED = 2;
  
-Enrf24 radio(9, 10, 6);  // P2.0=CE, P2.1=CSN, P2.2=IRQ
+Enrf24 radio(9, 10, 6);  // P2.0=CE, P2.1=SCN, P2.2=IRQ
 //const uint8_t txaddr[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0x01 };
 char txaddr[] = {'g','w','-','0','1'};
  
-const char *message = "obyvak:1:7,8V:22%";
+const char *message = "kuchyn:1:7,8V:22%";
 const char *str_off = "OFF";
  
 void dump_radio_status_to_serialport(uint8_t);
@@ -37,9 +37,11 @@ void loop() {
   radio.print(message);
   radio.flush();  // Force transmit (don't wait for any more data)
   dump_radio_status_to_serialport(radio.radioState());  // Should report IDLE
-  if(!radio.lastTXfailed) digitalWrite(LED, HIGH);
-  delay(100);
-  digitalWrite(LED, LOW);
+  if(radio.lastTXfailed) {
+    digitalWrite(LED, HIGH);
+    delay(100);
+    digitalWrite(LED, LOW);
+  }
   delay(1000);
 }
  

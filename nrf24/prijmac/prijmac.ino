@@ -5,8 +5,11 @@
 #include <string.h>
 #include <SPI.h>
 #include "U8glib.h"
- 
-Enrf24 radio(9, 10, 6);
+
+// mega
+Enrf24 radio(40, 53, 41);
+// duelaminove 
+//Enrf24 radio(9, 10, 6);
 //const uint8_t rxaddr[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0x01 };
 char rxaddr[] = {'g','w','-','0','1'};
 
@@ -22,6 +25,7 @@ void dump_radio_status_to_serialport(uint8_t);
  
 void setup() {
   countOfMessage = 0;
+  Serial.begin(9600);
  
   SPI.begin();
   SPI.setDataMode(SPI_MODE0);
@@ -57,18 +61,16 @@ void draw(void) {
  
 void loop() {
   delay(200);
-  u8g.firstPage();  
-  do {
-    draw();
-  } while( u8g.nextPage() );
-
+  
   char inbuf[33];
    
   dump_radio_status_to_serialport(radio.radioState());  // Should show Receive Mode
- 
+
+ Serial.println(state);
   while (!radio.available(true));
   if (radio.read(inbuf)) {
     nrfMessage = inbuf;
+    Serial.println(nrfMessage);
     ++countOfMessage;
   }
 }

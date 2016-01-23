@@ -1,0 +1,256 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><HTML LANG=en><HEAD><TITLE>4096 Color Picker and Mixer</TITLE><meta name="robots" content="noindex,nofollow"><META content="text/html; charset=iso-8859-1" http-equiv=Content-Type>
+
+<!-- Copyright 2003 by Kerry Watson.  You may freely distribute   -->
+<!-- this utility for personal & educational use on condition     -->
+<!-- that it remains unaltered. This is not permission to host it -->
+<!-- on a website.  Please report any problems via the homepage.  -->
+
+<STYLE TYPE="text/css"><!--
+A {text-decoration:none}
+BIG{font-size:120%;color:white}
+HR {color:#007}
+H1 {margin-top:0}
+H2 {font-size:106%}
+LI {padding-top:6px}
+CODE {color:#999}
+.stv {font-family:verdana,sans-serif;font-size:77%}
+.title {background-color:navy;color:white;padding:1px}
+.nobreak {white-space:nowrap}
+.bottomborder {border-bottom:1px solid #ddd}
+.menu {text-decoration:underline}
+A:hover {text-decoration:none}
+--></STYLE><SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">
+<!--
+web216=false
+triplet_bg="#FFF"
+triplet_fg="#007"
+selector="TEXT"
+
+rhi=15; ghi=15; bhi=15;
+
+hexr=15; hexg=15; hexb=15;
+
+textr=0; textg=0; textb=7;
+
+xr=15; xg=15; xb=15;
+
+tr=0; tg=0; tb=7;
+
+savecolor="FFFFFF"
+textcolor="000077"
+saved_BG=""
+saved_TEXT=""
+savecount=0
+savelength=10
+openw=false
+
+function makeArray(n){for(i=0;i<n;i++){this[i]=0}}
+
+choice=new makeArray(10)
+choice[0]="FFFFFF";choice[1]="?";choice[2]="?";choice[3]="?";choice[4]="?";
+choice[5]="?";choice[6]="?";choice[7]="?";choice[8]="?";choice[9]="?";
+
+txtcol=new makeArray(10)
+txtcol[0]="000077";txtcol[1]="?";txtcol[2]="?";txtcol[3]="?";txtcol[4]="?";
+txtcol[5]="?";txtcol[6]="?";txtcol[7]="?";txtcol[8]="?";txtcol[9]="?";
+
+hex=new makeArray(16)
+hex[0]="00";hex[1]="11";hex[2]="22";hex[3]="33";
+hex[4]="44";hex[5]="55";hex[6]="66";hex[7]="77"
+hex[8]="88";hex[9]="99";hex[10]="AA";hex[11]="BB";
+hex[12]="CC";hex[13]="DD";hex[14]="EE";hex[15]="FF"
+
+wsafe=new makeArray(16)
+wsafe[0]=0;wsafe[1]=0;wsafe[2]=3;wsafe[3]=3;
+wsafe[4]=3;wsafe[5]=6;wsafe[6]=6;wsafe[7]=6
+wsafe[8]=9;wsafe[9]=9;wsafe[10]=9;wsafe[11]=12;
+wsafe[12]=12;wsafe[13]=12;wsafe[14]=15;wsafe[15]=15
+
+function save_page_colors()   {tr=textr; tg=textg; tb=textb; xr=hexr; xg=hexg; xb=hexb}
+function restore_page_colors(){textr=tr; textg=tg; textb=tb; hexr=xr; hexg=xg; hexb=xb}
+
+function save()
+{
+ self.focus()
+ if ((saved_TEXT!=textcolor)||(saved_BG!=savecolor))
+ {
+  saved_BG  =savecolor
+  saved_TEXT=textcolor
+  choice[savecount]=savecolor
+  txtcol[savecount]=textcolor
+  if(savelength>savecount)savecount++
+  else for(i=0;i<=(savelength-1);i++){txtcol[i]=txtcol[i+1];choice[i]=choice[i+1]}
+ }
+}
+function recall()
+{
+ self.focus()
+ if(0!=savecount)
+ {
+  helpw=window.open('','ColorChoices','top=0,left=0,height=314,width=450,status=yes,menubar=yes,scrollbars=yes,resizable=yes')
+  helpw.document.writeln('<HTML><HEAD><TITLE>Saved Color Choices<\/TITLE>')
+  helpw.document.writeln('<STYLE>HTML,BODY{margin:0;padding:0}<\/STYLE>')
+  helpw.document.writeln('<\/HEAD><BODY onload="opener.openw=true" onunload="opener.openw=false"><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=10 WIDTH="100%">')
+  for(i=(savecount);i>0;i--){helpw.document.writeln('<TR><TD BGCOLOR="#'+choice[i-1]+'"><FONT FACE="verdana,sans-serif" COLOR='+txtcol[i-1]+'><H4><FONT COLOR=black>'+choice[i-1]+'<\/FONT><FONT FACE="verdana,sans-serif" COLOR=white>&nbsp;&nbsp;&nbsp;'+choice[i-1]+'<\/FONT><BR><BR>Text&nbsp;=&nbsp;'+txtcol[i-1]+'<\/H4>____<\/FONT><\/TD><\/TR>')}
+  helpw.document.writeln('<TR><TD>Save As... HTML only<\/TD><\/TR>')
+  helpw.document.writeln('<\/TABLE><\/BODY><\/HTML>')
+  helpw.document.close()
+  helpw.focus()
+ }
+}
+
+function close_pop(){if(openw)helpw.close()}
+
+function pp(r,g,b) {if(!web216) bg(r,g,b)}
+
+function bg(r,g,b)
+{
+ rhi=r; ghi=g; bhi=b;
+
+ if ("TEXT"==selector)
+ {
+  textcolor=hex[r]+hex[g]+hex[b]
+  textr=rhi; textg=ghi; textb=bhi;
+  document.fgColor="#"+textcolor
+ }
+ else
+ {
+  savecolor=hex[r]+hex[g]+hex[b]
+  hexr=rhi; hexg=ghi; hexb=bhi;
+  document.bgColor="#"+savecolor
+ }
+ if (!web216) set_fields()
+
+ document.form1.websafe.value=""
+}
+
+function bad56(r,g,b)
+{
+ if ((12<=r)&&(12<=g)&&(12<=b))
+ {
+   if (((13==r)||(14==r))||((13==g)||(14==g))||((13==b)||(14==b))) return true
+ }
+ else return false
+}
+
+function set_BG()
+{
+ web216=false
+ selector="BGCOLOR"
+ document.form1.toggle[0].checked=false
+ document.form1.toggle[1].checked=true
+ bg(hexr,hexg,hexb)
+ set_fields()
+}
+
+function set_text()
+{
+ web216=false
+ selector="TEXT"
+ document.form1.toggle[0].checked=true
+ document.form1.toggle[1].checked=false
+ bg(textr,textg,textb)
+ set_fields()
+}
+
+function set_216()
+{
+ document.form1.cred.value  =""
+ document.form1.cgreen.value=""
+ document.form1.cblue.value =""
+ web216=true
+ safe()
+}
+
+function safe()
+{
+ save_page_colors()
+
+ if ("TEXT"==selector)
+ {
+  if (bad56(textr,textg,textb))
+  {
+   document.form1.websafe.value="unsafe"
+   return
+  }
+  else
+  {
+   color="#"+hex[wsafe[textr]]+hex[wsafe[textg]]+hex[wsafe[textb]]
+   bg(wsafe[textr],wsafe[textg],wsafe[textb])
+  }
+ }
+ else
+ {
+  if (bad56(hexr,hexg,hexb))
+  {
+   document.form1.websafe.value="unsafe"
+   return
+  }
+  else
+  {
+   color="#"+hex[wsafe[hexr]]+hex[wsafe[hexg]]+hex[wsafe[hexb]]
+   bg(wsafe[hexr],wsafe[hexg],wsafe[hexb])
+  }
+ }
+ document.form1.websafe.value=" #"+color.charAt(1)+color.charAt(3)+color.charAt(5)
+ restore_page_colors()
+}
+
+function set_fields()
+{
+ color="#"+hex[textr]+hex[textg]+hex[textb]
+ six_fg=color
+ triplet_fg="#"+color.charAt(1)+color.charAt(3)+color.charAt(5)
+ document.form1.fg3.value=triplet_fg
+
+ color="#"+hex[hexr]+hex[hexg]+hex[hexb]
+ six_bg=color
+ triplet_bg="#"+color.charAt(1)+color.charAt(3)+color.charAt(5)
+ document.form1.bg3.value=triplet_bg
+
+ if ("TEXT"==selector) color=six_fg; else color=six_bg;
+
+ document.form1.cred.value  =color.charAt(1)+color.charAt(2)
+ document.form1.cgreen.value=color.charAt(3)+color.charAt(4)
+ document.form1.cblue.value =color.charAt(5)+color.charAt(6)
+ self.focus()
+}
+
+function inc_rh(){if(!web216){rhi+=1;if(15<rhi)rhi=15;bg(rhi,ghi,bhi)}}
+function inc_gh(){if(!web216){ghi+=1;if(15<ghi)ghi=15;bg(rhi,ghi,bhi)}}
+function inc_bh(){if(!web216){bhi+=1;if(15<bhi)bhi=15;bg(rhi,ghi,bhi)}}
+function dec_rh(){if(!web216){rhi-=1;if(0>rhi)rhi=0;bg(rhi,ghi,bhi)}}
+function dec_gh(){if(!web216){ghi-=1;if(0>ghi)ghi=0;bg(rhi,ghi,bhi)}}
+function dec_bh(){if(!web216){bhi-=1;if(0>bhi)bhi=0;bg(rhi,ghi,bhi)}}
+
+function check()
+{
+ if (9>screen.colorDepth || 8==screen.pixelDepth)
+ {
+  document.form1.cmode.value=" 256 color mode"
+ }
+ else
+ if (16>=screen.colorDepth || 16==screen.pixelDepth)
+ {
+  document.form1.cmode.value=" 16-bit color mode"
+ }
+ else
+  document.form1.cmode.value=" True Color"
+}
+
+function init()
+{
+ set_BG()
+ check()
+}
+function redo(){check();setTimeout("set_BG()",450)}
+onresize=redo;
+// -->
+</SCRIPT></HEAD><BODY BGCOLOR="#FFFFFF" TEXT="#000077" LINK="#FFFFFF" ALINK="#FFFFFF" VLINK="#FFFFFF" onLoad="init()" onUnload="close_pop()"><FORM name=form1 ACTION=""><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%"><TR><TD BGCOLOR="#C0C0C0"><TABLE BORDER=0 CELLSPACING=1 CELLPADDING=13 WIDTH="100%"><TR><TD BGCOLOR="#FFFFFF"><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%"><TR><TD VALIGN=top WIDTH="33%"><B><I><FONT SIZE=5 FACE="arial,sans-serif" COLOR="#000099">Web <FONT COLOR="#0099FF">C</FONT><FONT COLOR="#00CCFF">o</FONT><FONT COLOR="#00CC33">l</FONT><FONT COLOR="#FF9933">o</FONT><FONT COLOR="#FF6600">r</FONT><FONT COLOR="#FF0000">s</FONT></FONT></I></B>&nbsp;&nbsp;</TD><TD ALIGN=center VALIGN=top WIDTH="34%"><H1><FONT FACE="verdana,sans-serif" SIZE=2 COLOR="#000080"><SPAN CLASS=title>&nbsp;4096&nbsp;&nbsp;Color&nbsp;&nbsp;Picker&nbsp;</SPAN></FONT></H1></TD><TD ALIGN=right VALIGN=top WIDTH="33%" CLASS=stv>&nbsp;&nbsp;<A HREF="http://www.mywebsite.force9.co.uk/web-colors/" TITLE="Go to the Web Colors home page"><FONT COLOR="#0000CC"><U>Homepage</U></FONT></A></TD></TR></TABLE></TD></TR></TABLE></TD></TR></TABLE><FONT SIZE=1>&nbsp;<BR></FONT><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=14 WIDTH="100%"><TR><TD VALIGN=top WIDTH="50%" CLASS=bottomborder><DIV CLASS=stv> <H2>4096 colors for&nbsp;the&nbsp;web</H2>In this color picker the hex components for Red, Green &amp; Blue use the following values:<BR><BR></DIV><TT>00, 11, 22, 33, 44, 55, 66, 77, 88, 99, AA, BB, CC, DD, EE, FF</TT><BR><BR><DIV CLASS=stv>The total number of color combinations, <SPAN CLASS=nobreak>16 x 16 x 16 = 4096</SPAN>, includes the 216 colors in the web palette.&nbsp; Digit pairs are used because CSS style sheets allow each pair to be abbreviated to a single digit. In the following example the 6 digit hex value and the 3 digit value both define red:</DIV><PRE>&lt;style&gt;
+h1 {color:#FF0000}
+h2 {color:#F00}
+&lt;/style&gt;
+</PRE><DIV CLASS=stv> <H2>How to use the color&nbsp;picker</H2><UL><LI>Choose a starting color from the palette.<LI>Adjust the hex pairs by clicking on the plus or minus <B>[&nbsp;11&nbsp;]</B> buttons.<LI>Change the text color by clicking on <B>[&nbsp;Text&nbsp;]</B>.&nbsp;<I>Not all browsers can change the text color</I>.<LI>Switch back to changing the background color by clicking on <B>[&nbsp;BG&nbsp;]</B>.<LI>To see the nearest <SPAN CLASS=nobreak>web-safe</SPAN> color click on <B>[&nbsp;216&nbsp;]</B>.<LI>To continue from where you left off, click <B>Text</B>&nbsp;or&nbsp;<B>BG</B>.</UL></DIV></TD><TD BGCOLOR="#E0E0E0" VALIGN=top ALIGN=center WIDTH="50%"><CODE>Color mode detected as: <INPUT STYLE="vertical-align:top" TYPE=text NAME=cmode SIZE=20 VALUE=" JavaScript required"><BR><BR></CODE><TABLE ALIGN=center BORDER=0 CELLSPACING=0 CELLPADDING=0><TR><TD VALIGN=bottom><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0><TR><TD ALIGN=center><INPUT TYPE=button VALUE="11 +" onClick="inc_rh()"></TD><TD ALIGN=center><INPUT TYPE=button VALUE="11 +" onClick="inc_gh()"></TD><TD ALIGN=center><INPUT TYPE=button VALUE="11 +" onClick="inc_bh()"></TD></TR><TR><TD ALIGN=center><INPUT TYPE="text" NAME="cred" SIZE=3></TD><TD ALIGN=center><INPUT TYPE="text" NAME="cgreen" SIZE=3></TD><TD ALIGN=center><INPUT TYPE="text" NAME="cblue" SIZE=3></TD></TR><TR><TD ALIGN=center><INPUT TYPE=button VALUE="11 - " onClick="dec_rh()"></TD><TD ALIGN=center><INPUT TYPE=button VALUE="11 - " onClick="dec_gh()"></TD><TD ALIGN=center><INPUT TYPE=button VALUE="11 - " onClick="dec_bh()"></TD></TR></TABLE></TD><TD VALIGN=bottom><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0><TR><TD><TT>&nbsp;&nbsp;&nbsp;</TT></TD><TD VALIGN=bottom ALIGN=center><INPUT TYPE=radio NAME=toggle onClick="set_text()"><BR>&nbsp;<INPUT TYPE=text NAME=fg3 SIZE=4>&nbsp;<BR><INPUT TYPE=button VALUE="Text" onClick="set_text()"></TD><TD VALIGN=bottom ALIGN=center>&nbsp;<BR>&nbsp;<INPUT TYPE=text NAME=websafe SIZE=6>&nbsp;<BR><INPUT TYPE=button VALUE=" 216 " onClick="set_216()"></TD><TD VALIGN=bottom ALIGN=center><INPUT TYPE=radio NAME=toggle onClick="set_BG()"><BR>&nbsp;<INPUT TYPE=text NAME=bg3 SIZE=4>&nbsp;<BR><INPUT TYPE=button VALUE=" BG " onClick="set_BG()"></TD></TR></TABLE></TD></TR></TABLE><TABLE ALIGN=center BORDER=0 CELLSPACING=0 CELLPADDING=3><TR><TD BGCOLOR="#FFFFFF"><TABLE BORDER=0 CELLSPACING=1 CELLPADDING=0><TR><TD>&nbsp;&nbsp;&nbsp;</TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>FF</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>CC</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>99</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>66</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>00</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>00</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>66</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>99</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>CC</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>FF</TT></FONT></TD><TD COLSPAN=5 ROWSPAN=7 ALIGN=center VALIGN=middle><FONT FACE="verdana,sans-serif" SIZE=2 COLOR="#808080">125 web-safe<BR>colors<BR>without<BR>hex 33<BR>elements</FONT></TD></TR><TR><TD ALIGN=center><FONT COLOR="#009900"><TT>00</TT></FONT>&nbsp;</TD><TD BGCOLOR="#FF00FF"><A HREF="javascript:pp(15,0,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CC00FF"><A HREF="javascript:pp(12,0,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#9900FF"><A HREF="javascript:pp(9,0,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#6600FF"><A HREF="javascript:pp(6,0,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#0000FF"><A HREF="javascript:pp(0,0,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#0000CC"><A HREF="javascript:pp(0,0,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#6600CC"><A HREF="javascript:pp(6,0,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#9900CC"><A HREF="javascript:pp(9,0,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CC00CC"><A HREF="javascript:pp(12,0,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#FF00CC"><A HREF="javascript:pp(15,0,12)"><BIG>__</BIG></A></TD></TR><TR><TD ALIGN=center><FONT COLOR="#009900"><TT>66</TT></FONT>&nbsp;</TD><TD BGCOLOR="#FF66FF"><A HREF="javascript:pp(15,6,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CC66FF"><A HREF="javascript:pp(12,6,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#9966FF"><A HREF="javascript:pp(9,6,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#6666FF"><A HREF="javascript:pp(6,6,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#0066FF"><A HREF="javascript:pp(0,6,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#0066CC"><A HREF="javascript:pp(0,6,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#6666CC"><A HREF="javascript:pp(6,6,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#9966CC"><A HREF="javascript:pp(9,6,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CC66CC"><A HREF="javascript:pp(12,6,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#FF66CC"><A HREF="javascript:pp(15,6,12)"><BIG>__</BIG></A></TD></TR><TR><TD ALIGN=center><FONT COLOR="#009900"><TT>99</TT></FONT>&nbsp;</TD><TD BGCOLOR="#FF99FF"><A HREF="javascript:pp(15,9,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CC99FF"><A HREF="javascript:pp(12,9,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#9999FF"><A HREF="javascript:pp(9,9,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#6699FF"><A HREF="javascript:pp(6,9,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#0099FF"><A HREF="javascript:pp(0,9,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#0099CC"><A HREF="javascript:pp(0,9,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#6699CC"><A HREF="javascript:pp(6,9,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#9999CC"><A HREF="javascript:pp(9,9,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CC99CC"><A HREF="javascript:pp(12,9,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#FF99CC"><A HREF="javascript:pp(15,9,12)"><BIG>__</BIG></A></TD></TR><TR><TD ALIGN=center><FONT COLOR="#009900"><TT>CC</TT></FONT>&nbsp;</TD><TD BGCOLOR="#FFCCFF"><A HREF="javascript:pp(15,12,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CCCCFF"><A HREF="javascript:pp(12,12,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#99CCFF"><A HREF="javascript:pp(9,12,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#66CCFF"><A HREF="javascript:pp(6,12,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#00CCFF"><A HREF="javascript:pp(0,12,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#00CCCC"><A HREF="javascript:pp(0,12,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#66CCCC"><A HREF="javascript:pp(6,12,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#99CCCC"><A HREF="javascript:pp(9,12,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CCCCCC"><A HREF="javascript:pp(12,12,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#FFCCCC"><A HREF="javascript:pp(15,12,12)"><BIG>__</BIG></A></TD></TR><TR><TD ALIGN=center><FONT COLOR="#009900"><TT>FF</TT></FONT>&nbsp;</TD><TD BGCOLOR="#FFFFFF"><A HREF="javascript:pp(15,15,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CCFFFF"><A HREF="javascript:pp(12,15,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#99FFFF"><A HREF="javascript:pp(9,15,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#66FFFF"><A HREF="javascript:pp(6,15,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#00FFFF"><A HREF="javascript:pp(0,15,15)"><BIG>__</BIG></A></TD><TD BGCOLOR="#00FFCC"><A HREF="javascript:pp(0,15,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#66FFCC"><A HREF="javascript:pp(6,15,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#99FFCC"><A HREF="javascript:pp(9,15,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CCFFCC"><A HREF="javascript:pp(12,15,12)"><BIG>__</BIG></A></TD><TD BGCOLOR="#FFFFCC"><A HREF="javascript:pp(15,15,12)"><BIG>__</BIG></A></TD></TR><TR><TD><TT>&nbsp;</TT></TD><TD COLSPAN=5 BGCOLOR="#666699" ALIGN=center><FONT COLOR="#FFFFFF"><TT>FF</TT></FONT></TD><TD COLSPAN=5 BGCOLOR="#666699" ALIGN=center><FONT COLOR="#FFFFFF"><TT>CC</TT></FONT></TD></TR><TR><TD><TT>&nbsp;</TT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>FF</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>CC</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>99</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>66</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>00</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>00</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>66</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>99</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>CC</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>FF</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>FF</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>CC</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>99</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>66</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>00</TT></FONT></TD></TR><TR><TD ALIGN=center><FONT COLOR="#009900"><TT>00</TT></FONT></TD><TD BGCOLOR="#FF0099"><A HREF="javascript:pp(15,0,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CC0099"><A HREF="javascript:pp(12,0,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#990099"><A HREF="javascript:pp(9,0,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#660099"><A HREF="javascript:pp(6,0,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#000099"><A HREF="javascript:pp(0,0,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#000066"><A HREF="javascript:pp(0,0,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#660066"><A HREF="javascript:pp(6,0,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#990066"><A HREF="javascript:pp(9,0,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CC0066"><A HREF="javascript:pp(12,0,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#FF0066"><A HREF="javascript:pp(15,0,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#FF0000"><A HREF="javascript:pp(15,0,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CC0000"><A HREF="javascript:pp(12,0,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#990000"><A HREF="javascript:pp(9,0,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#660000"><A HREF="javascript:pp(6,0,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#000000"><A HREF="javascript:pp(0,0,0)"><BIG>__</BIG></A></TD></TR><TR><TD ALIGN=center><FONT COLOR="#009900"><TT>66</TT></FONT></TD><TD BGCOLOR="#FF6699"><A HREF="javascript:pp(15,6,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CC6699"><A HREF="javascript:pp(12,6,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#996699"><A HREF="javascript:pp(9,6,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#666699"><A HREF="javascript:pp(6,6,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#006699"><A HREF="javascript:pp(0,6,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#006666"><A HREF="javascript:pp(0,6,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#666666"><A HREF="javascript:pp(6,6,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#996666"><A HREF="javascript:pp(9,6,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CC6666"><A HREF="javascript:pp(12,6,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#FF6666"><A HREF="javascript:pp(15,6,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#FF6600"><A HREF="javascript:pp(15,6,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CC6600"><A HREF="javascript:pp(12,6,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#996600"><A HREF="javascript:pp(9,6,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#666600"><A HREF="javascript:pp(6,6,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#006600"><A HREF="javascript:pp(0,6,0)"><BIG>__</BIG></A></TD></TR><TR><TD ALIGN=center><FONT COLOR="#009900"><TT>99</TT></FONT></TD><TD BGCOLOR="#FF9999"><A HREF="javascript:pp(15,9,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CC9999"><A HREF="javascript:pp(12,9,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#999999"><A HREF="javascript:pp(9,9,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#669999"><A HREF="javascript:pp(6,9,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#009999"><A HREF="javascript:pp(0,9,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#009966"><A HREF="javascript:pp(0,9,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#669966"><A HREF="javascript:pp(6,9,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#999966"><A HREF="javascript:pp(9,9,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CC9966"><A HREF="javascript:pp(12,9,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#FF9966"><A HREF="javascript:pp(15,9,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#FF9900"><A HREF="javascript:pp(15,9,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CC9900"><A HREF="javascript:pp(12,9,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#999900"><A HREF="javascript:pp(9,9,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#669900"><A HREF="javascript:pp(6,9,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#009900"><A HREF="javascript:pp(0,9,0)"><BIG>__</BIG></A></TD></TR><TR><TD ALIGN=center><FONT COLOR="#009900"><TT>CC</TT></FONT></TD><TD BGCOLOR="#FFCC99"><A HREF="javascript:pp(15,12,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CCCC99"><A HREF="javascript:pp(12,12,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#99CC99"><A HREF="javascript:pp(9,12,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#66CC99"><A HREF="javascript:pp(6,12,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#00CC99"><A HREF="javascript:pp(0,12,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#00CC66"><A HREF="javascript:pp(0,12,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#66CC66"><A HREF="javascript:pp(6,12,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#99CC66"><A HREF="javascript:pp(9,12,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CCCC66"><A HREF="javascript:pp(12,12,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#FFCC66"><A HREF="javascript:pp(15,12,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#FFCC00"><A HREF="javascript:pp(15,12,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CCCC00"><A HREF="javascript:pp(12,12,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#99CC00"><A HREF="javascript:pp(9,12,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#66CC00"><A HREF="javascript:pp(6,12,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#00CC00"><A HREF="javascript:pp(0,12,0)"><BIG>__</BIG></A></TD></TR><TR><TD ALIGN=center><FONT COLOR="#009900"><TT>FF</TT></FONT></TD><TD BGCOLOR="#FFFF99"><A HREF="javascript:pp(15,15,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CCFF99"><A HREF="javascript:pp(12,15,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#99FF99"><A HREF="javascript:pp(9,15,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#66FF99"><A HREF="javascript:pp(6,15,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#00FF99"><A HREF="javascript:pp(0,15,9)"><BIG>__</BIG></A></TD><TD BGCOLOR="#00FF66"><A HREF="javascript:pp(0,15,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#66FF66"><A HREF="javascript:pp(6,15,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#99FF66"><A HREF="javascript:pp(9,15,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CCFF66"><A HREF="javascript:pp(12,15,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#FFFF66"><A HREF="javascript:pp(15,15,6)"><BIG>__</BIG></A></TD><TD BGCOLOR="#FFFF00"><A HREF="javascript:pp(15,15,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#CCFF00"><A HREF="javascript:pp(12,15,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#99FF00"><A HREF="javascript:pp(9,15,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#66FF00"><A HREF="javascript:pp(6,15,0)"><BIG>__</BIG></A></TD><TD BGCOLOR="#00FF00"><A HREF="javascript:pp(0,15,0)"><BIG>__</BIG></A></TD></TR><TR><TD><TT>&nbsp;</TT></TD><TD COLSPAN=5 BGCOLOR="#666699" ALIGN=center><FONT COLOR="#FFFFFF"><TT>99</TT></FONT></TD><TD COLSPAN=5 BGCOLOR="#666699" ALIGN=center><FONT COLOR="#FFFFFF"><TT>66</TT></FONT></TD><TD COLSPAN=5 BGCOLOR="#666699" ALIGN=center><FONT COLOR="#FFFFFF"><TT>00</TT></FONT></TD></TR></TABLE></TD></TR></TABLE><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=7><TR><TD WIDTH="55%" ALIGN=right><INPUT TYPE=button VALUE=" save  " onClick="save()">&nbsp;</TD><TD WIDTH="45%" ALIGN=left><INPUT TYPE=button VALUE=" recall " onClick="recall()"></TD></TR><TR><TD WIDTH="55%" ALIGN=right VALIGN=top CLASS=stv STYLE="color:gray">Save&nbsp;a&nbsp;color<BR>combination</TD><TD WIDTH="45%" ALIGN=left VALIGN=top CLASS=stv STYLE="color:gray">View the last 10<BR>choices in a<BR><SPAN CLASS=nobreak>pop-up window</SPAN></TD></TR></TABLE></TD></TR><TR><TD ALIGN=left VALIGN=top WIDTH="50%" CLASS=stv> <H2>Unsafe colors</H2>In 16&nbsp;bit mode (&nbsp;High Color&nbsp;) colors can be approximated with a 'dither' pattern.&nbsp; In 256 color mode <EM>most</EM> of the colors will change to the nearest websafe color, but the 56 lightest colors are unsafe.&nbsp; There are 256 possible alternative colors, not just the 216 colors in the web palette. Microsoft Windows has 32&nbsp;grayscale shades in its 256 color palette.<BR><BR>The table on the right shows 64 color combinations using only hex components CC, DD, EE, FF.&nbsp;
+The eight colors marked with circles are web palette colors.&nbsp; Each browser uses a different selection of substitute colors for the remaining 56.<H2>Safe light colors</H2>If the hex values for Red, Green &amp; Blue are all "F9", or higher,
+most browsers will use white in 256 Color Mode.&nbsp;
+Internet Explorer for MS&nbsp;Windows also uses pale gray (&nbsp;F8.F8.F8&nbsp;) in 256 color mode.<BR><BR></TD><TD BGCOLOR="#F0F0F0" ALIGN=center VALIGN=top WIDTH="50%"><FONT FACE="verdana,sans-serif" SIZE=2 COLOR="#808080">Unsafe colors</FONT><BR><BR><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3><TR><TD BGCOLOR="#FFFFFF"><TABLE BORDER=0 CELLSPACING=1 CELLPADDING=0><TR><TD></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>FF</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>EE</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>DD</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>CC</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>CC</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>DD</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>EE</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>FF</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>FF</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>EE</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>DD</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>CC</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>CC</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>DD</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>EE</TT></FONT></TD><TD ALIGN=center><FONT COLOR="#CC0000"><TT>FF</TT></FONT></TD><TD></TD></TR><TR><TD><FONT COLOR="#009900"><TT>CC</TT></FONT>&nbsp;</TD><TD BGCOLOR="#FFCCFF"><FONT COLOR="#999999">&nbsp;O&nbsp;</FONT></TD><TD BGCOLOR="#EECCFF">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD><TD BGCOLOR="#DDCCFF">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD><TD BGCOLOR="#CCCCFF"><FONT COLOR="#999999">&nbsp;O&nbsp;</FONT></TD><TD BGCOLOR="#CCCCEE">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD><TD BGCOLOR="#DDCCEE">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD><TD BGCOLOR="#EECCEE">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD><TD BGCOLOR="#FFCCEE">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD><TD BGCOLOR="#FFCCDD">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD><TD BGCOLOR="#EECCDD">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD><TD BGCOLOR="#DDCCDD">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD><TD BGCOLOR="#CCCCDD">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD><TD BGCOLOR="#CCCCCC"><FONT COLOR="#999999">&nbsp;O&nbsp;</FONT></TD><TD BGCOLOR="#DDCCCC">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD><TD BGCOLOR="#EECCCC">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD><TD BGCOLOR="#FFCCCC"><FONT COLOR="#999999">&nbsp;O&nbsp;</FONT></TD><TD>&nbsp;<FONT COLOR="#009900"><TT>CC</TT></FONT></TD></TR><TR><TD><FONT COLOR="#009900"><TT>DD</TT></FONT>&nbsp;</TD><TD BGCOLOR="#FFDDFF">&nbsp;</TD><TD BGCOLOR="#EEDDFF">&nbsp;</TD><TD BGCOLOR="#DDDDFF">&nbsp;</TD><TD BGCOLOR="#CCDDFF">&nbsp;</TD><TD BGCOLOR="#CCDDEE">&nbsp;</TD><TD BGCOLOR="#DDDDEE">&nbsp;</TD><TD BGCOLOR="#EEDDEE">&nbsp;</TD><TD BGCOLOR="#FFDDEE">&nbsp;</TD><TD BGCOLOR="#FFDDDD">&nbsp;</TD><TD BGCOLOR="#EEDDDD">&nbsp;</TD><TD BGCOLOR="#DDDDDD">&nbsp;</TD><TD BGCOLOR="#CCDDDD">&nbsp;</TD><TD BGCOLOR="#CCDDCC">&nbsp;</TD><TD BGCOLOR="#DDDDCC">&nbsp;</TD><TD BGCOLOR="#EEDDCC">&nbsp;</TD><TD BGCOLOR="#FFDDCC">&nbsp;</TD><TD>&nbsp;<FONT COLOR="#009900"><TT>DD</TT></FONT></TD></TR><TR><TD><FONT COLOR="#009900"><TT>EE</TT></FONT>&nbsp;</TD><TD BGCOLOR="#FFEEFF">&nbsp;</TD><TD BGCOLOR="#EEEEFF">&nbsp;</TD><TD BGCOLOR="#DDEEFF">&nbsp;</TD><TD BGCOLOR="#CCEEFF">&nbsp;</TD><TD BGCOLOR="#CCEEEE">&nbsp;</TD><TD BGCOLOR="#DDEEEE">&nbsp;</TD><TD BGCOLOR="#EEEEEE">&nbsp;</TD><TD BGCOLOR="#FFEEEE">&nbsp;</TD><TD BGCOLOR="#FFEEDD">&nbsp;</TD><TD BGCOLOR="#EEEEDD">&nbsp;</TD><TD BGCOLOR="#DDEEDD">&nbsp;</TD><TD BGCOLOR="#CCEEDD">&nbsp;</TD><TD BGCOLOR="#CCEECC">&nbsp;</TD><TD BGCOLOR="#DDEECC">&nbsp;</TD><TD BGCOLOR="#EEEECC">&nbsp;</TD><TD BGCOLOR="#FFEECC">&nbsp;</TD><TD>&nbsp;<FONT COLOR="#009900"><TT>EE</TT></FONT></TD></TR><TR><TD><FONT COLOR="#009900"><TT>FF</TT></FONT>&nbsp;</TD><TD BGCOLOR="#FFFFFF"><FONT COLOR="#999999">&nbsp;O</FONT></TD><TD BGCOLOR="#EEFFFF">&nbsp;</TD><TD BGCOLOR="#DDFFFF">&nbsp;</TD><TD BGCOLOR="#CCFFFF"><FONT COLOR="#999999">&nbsp;O</FONT></TD><TD BGCOLOR="#CCFFEE">&nbsp;</TD><TD BGCOLOR="#DDFFEE">&nbsp;</TD><TD BGCOLOR="#EEFFEE">&nbsp;</TD><TD BGCOLOR="#FFFFEE">&nbsp;</TD><TD BGCOLOR="#FFFFDD">&nbsp;</TD><TD BGCOLOR="#EEFFDD">&nbsp;</TD><TD BGCOLOR="#DDFFDD">&nbsp;</TD><TD BGCOLOR="#CCFFDD">&nbsp;</TD><TD BGCOLOR="#CCFFCC"><FONT COLOR="#999999">&nbsp;O</FONT></TD><TD BGCOLOR="#DDFFCC">&nbsp;</TD><TD BGCOLOR="#EEFFCC">&nbsp;</TD><TD BGCOLOR="#FFFFCC"><FONT COLOR="#999999">&nbsp;O</FONT></TD><TD>&nbsp;<FONT COLOR="#009900"><TT>FF</TT></FONT></TD></TR><TR><TD></TD><TD COLSPAN=4 BGCOLOR="#666699" ALIGN=center><FONT COLOR="#FFFFFF"><TT>FF</TT></FONT></TD><TD COLSPAN=4 BGCOLOR="#666699" ALIGN=center><FONT COLOR="#FFFFFF"><TT>EE</TT></FONT></TD><TD COLSPAN=4 BGCOLOR="#666699" ALIGN=center><FONT COLOR="#FFFFFF"><TT>DD</TT></FONT></TD><TD COLSPAN=4 BGCOLOR="#666699" ALIGN=center><FONT COLOR="#FFFFFF"><TT>CC</TT></FONT></TD><TD></TD></TR></TABLE></TD></TR></TABLE></TD></TR></TABLE><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=6 WIDTH="100%"><TR><TD BGCOLOR="#C8C8C8" ALIGN=center CLASS=stv><FONT COLOR="#808080">&nbsp;&#169; 2003, Kerry Watson | www.mywebsite.force9.co.uk/web-colors/&nbsp;</FONT></TD></TR></TABLE></FORM></BODY></HTML>

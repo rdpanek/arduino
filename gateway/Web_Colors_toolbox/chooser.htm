@@ -1,0 +1,550 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><title>3-in-1 Color Picker</title><meta name="robots" content="noindex,nofollow" /><meta content="text/xml; charset=iso-8859-1" http-equiv="Content-Type" />
+
+<!-- Copyright 2004 by Kerry Watson.  You may freely distribute   -->
+<!-- this utility for personal & educational use on condition     -->
+<!-- that it remains unaltered. This is not permission to host it -->
+<!-- on a website.  -->
+
+<style type="text/css"><!--
+html,body{margin:0;padding:0}
+a{text-decoration:none;color:white}
+a:hover{text-decoration:underline;color:black}
+a.s0:hover{color:white}
+a.menu:visited{color:purple}
+a.menu:hover{text-decoration:none;color:#00c}
+h1,h2{font-family:verdana,sans-serif;font-size:82%;margin-top:0;margin-bottom:0}
+tt{color:black}
+hr{height:1px;border-style:none;color:silver;background:silver}
+img{vertical-align:middle}
+p,ul,pre{font:77% verdana,sans-serif}
+.s0{font:80% arial,sans-serif;color:white}
+.s1{font:80% arial,sans-serif;color:black}
+.s2{font:77% verdana,sans-serif;color:black;padding-top:2px;padding-bottom:4px}
+.s3{color:black}
+.urd{border-bottom:1px solid #e80000}
+.ugr{border-bottom:1px solid #00d800}
+.ubl{border-bottom:1px solid #0000c8}
+.menu{color:#00c;text-decoration:underline}
+.title{background:navy;color:white;padding:1px}
+.graybg{background:#D0D0D0;padding-top:2px;padding-bottom:3px}
+.counter{background:#989CC0}
+.nobreak{white-space:nowrap}
+.borderbottom1{border-bottom:1px solid #D8D8D8}
+.borderbottom2{border-bottom:1px solid #E0E0E0}
+.borderbottom3{border-bottom:1px solid #D0D0D0}
+.borderbottom4{border-bottom:1px solid silver}
+--></style>
+<script type="text/javascript" language="JavaScript">
+//<![CDATA[
+<!--
+if(window.top!=window) window.top.location=window.self.location
+
+xr=15; xg=15; xb=15; rlschar=15; glschar=15; blschar=15;
+txtr=0; txtg=0; txtb=8; txtrlschar=0; txtglschar=0; txtblschar=0;
+tempr=15; tempg=15; tempb=15; temprlschar=15; tempglschar=15; tempblschar=15;
+saved_BG=""
+saved_TEXT=""
+selector="BGCOLOR"
+colormode="CNAMES"
+mode16=false
+
+text_16_bit="000080"
+bg_16_bit="FFFFFF"
+
+text_216="000099"
+bg_216="FFFFFF"
+r216="F"
+g216="F"
+b216="F"
+
+text_name="navy"
+text_index=101
+bg_name="white"
+bg_index=129
+
+text_color="navy"
+bg_color="white"
+savecount=0
+savelength=10
+openw=false
+
+function makeArray(n){for(i=0;i<n;i++){this[i]=0}}
+
+choice=new makeArray(10)
+choice[0]="?";choice[1]="?";choice[2]="?";choice[3]="?";choice[4]="?";
+choice[5]="?";choice[6]="?";choice[7]="?";choice[8]="?";choice[9]="?";
+
+txtcol=new makeArray(10)
+txtcol[0]="?";txtcol[1]="?";txtcol[2]="?";txtcol[3]="?";txtcol[4]="?";
+txtcol[5]="?";txtcol[6]="?";txtcol[7]="?";txtcol[8]="?";txtcol[9]="?";
+
+hex=new makeArray(17)
+hex[0]="0";hex[1]="1";hex[2]="2";hex[3]="3";
+hex[4]="4";hex[5]="5";hex[6]="6";hex[7]="7"
+hex[8]="8";hex[9]="9";hex[10]="A";hex[11]="B";
+hex[12]="C";hex[13]="D";hex[14]="E";hex[15]="F";hex[16]="FF";
+
+na=new makeArray(138)
+na[0]="FFFAFA";na[1]="F0F8FF";na[2]="F0FFFF";na[3]="FFFAF0";na[4]="F8F8FF";na[5]="F5FFFA";na[6]="FFF0F5";na[7]="E6E6FA";na[8]="F0FFF0";na[9]="FDF5E6";na[10]="FFF5EE";na[11]="FAF0E6";na[12]="FFFFF0";na[13]="FFFFE0";na[14]="FFFACD";na[15]="FFF8DC";na[16]="FFEFD5";na[17]="FFEBCD";na[18]="F5F5DC";na[19]="FFDEAD";na[20]="FFE4C4";na[21]="FAEBD7";na[22]="FFE4B5";na[23]="FFDAB9";na[24]="F5DEB3";na[25]="DEB887";na[26]="D2B48C";
+na[27]="FFFF00";na[28]="FFD700";na[29]="FFA500";na[30]="FF8C00";na[31]="FF6347";na[32]="FF4500";na[33]="FF0000";na[34]="DC143C";na[35]="B22222";na[36]="8B0000";na[37]="A52A2A";na[38]="8B4513";na[39]="800000";na[40]="D2691E";na[41]="A0522D";na[42]="CD5C5C";na[43]="F4A460";na[44]="CD853F";na[45]="FA8072";na[46]="FFA07A";na[47]="E9967A";na[48]="FF7F50";na[49]="F08080";na[50]="BC8F8F";
+na[51]="EEE8AA";na[52]="DAA520";na[53]="B8860B";na[54]="FAFAD2";na[55]="F0E68C";na[56]="BDB76B";na[57]="808000";na[58]="6B8E23";na[59]="556B2F";na[60]="228B22";na[61]="008000";na[62]="006400";na[63]="ADFF2F";na[64]="9ACD32";na[65]="32CD32";na[66]="7FFF00";na[67]="7CFC00";na[68]="00FF00";na[69]="90EE90";na[70]="98FB98";na[71]="00FF7F";na[72]="7FFFD4";na[73]="66CDAA";na[74]="00FA9A";na[75]="2E8B57";na[76]="3CB371";na[77]="8FBC8F";
+na[78]="20B2AA";na[79]="48D1CC";na[80]="00CED1";na[81]="AFEEEE";na[82]="40E0D0";na[83]="5F9EA0";na[84]="E0FFFF";na[85]="00FFFF";na[86]="008B8B";na[87]="ADD8E6";na[88]="B0E0E6";na[89]="008080";na[90]="87CEFA";na[91]="87CEEB";na[92]="00BFFF";na[93]="6495ED";na[94]="4169E1";na[95]="1E90FF";na[96]="00008B";na[97]="0000CD";na[98]="0000FF";na[99]="4B0082";na[100]="191970";na[101]="000080";
+na[102]="9400D3";na[103]="8A2BE2";na[104]="EE82EE";na[105]="9932CC";na[106]="BA55D3";na[107]="DA70D6";na[108]="FF00FF";na[109]="9370DB";na[110]="DDA0DD";na[111]="8B008B";na[112]="800080";na[113]="D8BFD8";na[114]="C71585";na[115]="FF1493";na[116]="FF69B4";na[117]="DB7093";na[118]="FFB6C1";na[119]="FFC0CB";
+na[120]="B0C4DE";na[121]="4682B4";na[122]="FFE4E1";na[123]="7B68EE";na[124]="6A5ACD";na[125]="483D8B";na[126]="778899";na[127]="708090";na[128]="2F4F4F";na[129]="FFFFFF";na[130]="F5F5F5";na[131]="DCDCDC";na[132]="D3D3D3";na[133]="C0C0C0";na[134]="A9A9A9";na[135]="808080";na[136]="696969";na[137]="000000";
+
+ws=new makeArray(138)
+ws[0]="FFFFFF";ws[1]="FFFFFF";ws[2]="FFFFFF";ws[3]="FFFFFF";ws[4]="FFFFFF";ws[5]="FFFFFF";ws[6]="FFFFFF";ws[7]="FFFFFF";ws[8]="FFFFFF";ws[9]="FFFFFF";ws[10]="FFFFFF";ws[11]="FFFFFF";ws[12]="FFFFFF";ws[13]="FFFFFF";ws[14]="FFFFCC";ws[15]="FFFFFF";ws[16]="FFFFFF";ws[17]="FFFFFF";ws[18]="FFFFFF";ws[19]="FFCC99";ws[20]="FFFFFF";ws[21]="FFFFFF";ws[22]="FFFFFF";ws[23]="FFFFFF";ws[24]="FFFFFF";ws[25]="FFFFFF";ws[26]="FFFFFF";
+ws[27]="FFFF00";ws[28]="FFCC00";ws[29]="FF9900";ws[30]="FF9900";ws[31]="FF6633";ws[32]="FF3300";ws[33]="FF0000";ws[34]="CC0033";ws[35]="993333";ws[36]="990000";ws[37]="993333";ws[38]="993300";ws[39]="990000";ws[40]="CC6633";ws[41]="996633";ws[42]="CC6666";ws[43]="FF9966";ws[44]="CC9933";ws[45]="FF9966";ws[46]="FF9966";ws[47]="FF9966";ws[48]="FF6666";ws[49]="CC6666";ws[50]="CC9999";
+ws[51]="FFFF99";ws[52]="CC9933";ws[53]="CC9900";ws[54]="FFFFCC";ws[55]="FFFF99";ws[56]="CCCC66";ws[57]="999900";ws[58]="669933";ws[59]="666633";ws[60]="339933";ws[61]="009900";ws[62]="006600";ws[63]="99FF33";ws[64]="99CC33";ws[65]="33CC33";ws[66]="66FF00";ws[67]="66FF00";ws[68]="00FF00";ws[69]="#99FF99";ws[70]="99FF99";ws[71]="00FF66";ws[72]="66FFCC";ws[73]="66CC99";ws[74]="00FF99";ws[75]="339966";ws[76]="33CC66";ws[77]="99CC99";
+ws[78]="339999";ws[79]="33CCCC";ws[80]="00CCCC";ws[81]="99FFFF";ws[82]="33CCCC";ws[83]="669999";ws[84]="CCFFFF";ws[85]="00FFFF";ws[86]="009999";ws[87]="CCFFFF";ws[88]="CCFFFF";ws[89]="009999";ws[90]="#99CCFF";ws[91]="#99CCFF";ws[92]="00CCFF";ws[93]="6699FF";ws[94]="3366CC";ws[95]="3399FF";ws[96]="000099";ws[97]="0000CC";ws[98]="0000FF";ws[99]="330099";ws[100]="000066";ws[101]="000099";
+ws[102]="9900CC";ws[103]="9933CC";ws[104]="FF99FF";ws[105]="9933CC";ws[106]="CC66CC";ws[107]="CC66CC";ws[108]="FF00FF";ws[109]="9966CC";ws[110]="CC99CC";ws[111]="990099";ws[112]="990099";ws[113]="CCCCCC";ws[114]="CC0099";ws[115]="FF0099";ws[116]="FF66CC";ws[117]="CC6699";ws[118]="FFCCCC";ws[119]="FFCCCC";
+ws[120]="B0C4DE";ws[121]="3399CC";ws[122]="FFCCCC";ws[123]="6666FF";ws[124]="6666CC";ws[125]="333399";ws[126]="669999";ws[127]="669999";ws[128]="336666";ws[129]="FFFFFF";ws[130]="FFFFFF";ws[131]="CCCCCC";ws[132]="CCCCCC";ws[133]="CCCCCC";ws[134]="999999";ws[135]="999999";ws[136]="666666";ws[137]="000000";
+
+wsafe=new makeArray(16)
+wsafe[0]=0;wsafe[1]=0;wsafe[2]=3;wsafe[3]=3;
+wsafe[4]=3;wsafe[5]=6;wsafe[6]=6;wsafe[7]=6
+wsafe[8]=9;wsafe[9]=9;wsafe[10]=9;wsafe[11]=9;
+wsafe[12]=12;wsafe[13]=12;wsafe[14]=12;wsafe[15]=15
+
+function scrollUp(){self.scroll(0,0);self.focus()}
+function scroll_top(){document.write('<a href="javascript:scrollUp()" class="s2">Back&nbsp;to&nbsp;the&nbsp;top<\/a>')}
+
+function save()
+{
+ self.focus()
+ if ((saved_TEXT!=text_color)||(saved_BG!=bg_color))
+ {
+  saved_BG  =bg_color
+  saved_TEXT=text_color
+  choice[savecount]=bg_color
+  txtcol[savecount]=text_color
+  if(savelength>savecount)savecount++
+  else for(i=0;i<=(savelength-1);i++){if("TEXT"==selector)txtcol[i]=txtcol[i+1];else choice[i]=choice[i+1]}
+ }
+}
+function recall()
+{
+ self.focus()
+ if(0!=savecount)
+ {
+  helpw=window.open('','ColorChoices','top=0,left=0,height=314,width=450,status=yes,menubar=yes,scrollbars=yes,resizable=yes')
+  helpw.document.writeln('<html><head><title>Saved Color Choices<\/title>')
+  helpw.document.writeln('<style>HTML,BODY{margin:0;padding:0}<\/style>')
+  helpw.document.writeln('<\/head><body onload="opener.openw=true" onunload="opener.openw=false"><table border=0 cellspacing=0 cellpadding=10 width="100%">')
+  for(i=(savecount);i>0;i--){helpw.document.writeln('<tr><td bgcolor="'+choice[i-1]+'"><font face="verdana,sans-serif" color='+txtcol[i-1]+'><h4><font color=black>'+choice[i-1]+'<\/font><font face="verdana,sans-serif" color=white>&nbsp;&nbsp;&nbsp;'+choice[i-1]+'<\/font><br><br>Text&nbsp;=&nbsp;'+txtcol[i-1]+'<\/h4>____<\/font><\/td><\/tr>')}
+  helpw.document.writeln('<tr><td>Save As... HTML only<\/td><\/tr>')
+  helpw.document.writeln('<\/table><\/body><\/html>')
+  helpw.document.close()
+  helpw.focus()
+ }
+}
+function close_pop(){if(openw)helpw.close()}
+
+function redplus8(){if((0==xr)&&(0==rlschar))xr=1;else if(16<=(rlschar+8)){rlschar=0;if(16<=(xr+1)){xr=15;rlschar=15}else{xr+=1}}else{rlschar+=8}}
+function blueplus8(){if((0==xb)&&(0==blschar))xb=1;else if(16<=(blschar+8)){blschar=0;if(16<=(xb+1)){xb=15;blschar=15}else{xb+=1}}else{blschar+=8}}
+function inc_green(){xg+=1;if(15<xg){xg=15;glschar=15}}
+
+function rminus8(){if(mode16){if(0==(rlschar-8))rlschar=0;else{if(1>=xr){xr=0;rlschar=0}else{if(15==rlschar)rlschar=8;else{xr-=1;rlschar=8}}}set16()}}
+function gminus4(){if(mode16){if(15==xg&&15==glschar)glschar=12;else{if(0==xg&&8>=glschar){glschar=0}else{if(0==glschar){xg-=1;glschar=12}else glschar-=4}}set16()}}
+function bminus8(){if(mode16){if(0==(blschar-8))blschar=0;else{if(1>=xb){xb=0;blschar=0}else{if(15==blschar)blschar=8;else{xb-=1;blschar=8}}}set16()}}
+function rplus8(){if(mode16){redplus8();set16()}}
+function gplus4(){if(mode16){if(0==xg&&8>glschar)glschar=4;if(15==xg){if(12<=glschar)glschar=15;else glschar+=4}else if(12==glschar){xg+=1;glschar=0}else glschar+=4;set16()}}
+function bplus8(){if(mode16){blueplus8();set16()}}
+function inc_rh(){if(mode16){xr+=1;if(15<xr){xr=15;rlschar=15}set16()}}
+function inc_gh(){if(mode16){inc_green();set16()}}
+function inc_bh(){if(mode16){xb+=1;if(15<xb){xb=15;blschar=15}set16()}}
+function dec_rh(){if(mode16){if(15==xr&&15==rlschar){rlschar=0}else{xr-=1}if(0>xr)xr=0;set16()}}
+function dec_gh(){if(mode16){if(15==xg&&15==glschar){glschar=0}else{xg-=1}if(0>xg)xg=0;set16()}}
+function dec_bh(){if(mode16){if(15==xb&&15==blschar){blschar=0}else{xb-=1}if(0>xb)xb=0;set16()}}
+
+function darken(){if(mode16){if(1<xr||1<xg||1<xb){if(15==xr&&15==rlschar){rlschar=0}else{xr-=1}if(0>xr)xr=0;if(15==xg&&15==glschar){glschar=0}else{xg-=1}if(0>xg)xg=0;if(15==xb&&15==blschar){blschar=0}else{xb-=1}if(0>xb)xb=0;set16()}self.focus()}}
+function lighten(){if(mode16){if(15>xr||15>xg||15>xb){xr+=1;if(15<xr){xr=15;rlschar=15}xg+=1;if(15<xg){xg=15;glschar=15}xb+=1;if(15<xb){xb=15;blschar=15}set16()}self.focus()}}
+
+function check()
+{
+ if (9>screen.colorDepth || 8==screen.pixelDepth) {document.form1.cmode.value=" 256 color mode"}
+ else
+ if (16>=screen.colorDepth || 16==screen.pixelDepth) {document.form1.cmode.value=" 16-bit color mode"}
+ else document.form1.cmode.value=" True Color"
+}
+function clear_names()
+{
+ document.form1.chex.value=""
+ document.form1.cname.value=" select named colors"
+}
+function unsafe216()
+{
+ if (("C"<=hex[xr])&&("C"<=hex[xg])&&("C"<=hex[xb]))
+ {
+  if (("E"==hex[xr])||("E"==hex[xg])||("E"==hex[xb])) return true
+ }
+ else return false
+}
+
+function bg(index,ncolor)
+{
+ self.focus()
+ mode16=false
+ colormode="CNAMES"
+ document.form1.radios[2].checked=true
+
+ if ("TEXT"==selector)
+ {
+  text_index=index
+  text_name= ncolor
+  text_color=ncolor
+  str="#"+na[index]
+  document.fgColor=str
+  document.form1.chex.value=str
+ }
+ else
+ {
+  bg_index=index
+  bg_name= ncolor
+  bg_color=ncolor
+  str="#"+na[index]
+  document.bgColor=str
+  document.form1.chex.value=str
+ }
+ document.form1.cname.value=" "+ncolor
+ name_to_16_bit(na[index])
+ name_to_websafe(index)
+ set_decimal("#"+na[index])
+}
+function name_to_16_bit(str)
+{
+ xr=parseInt("0x"+str.charAt(0))
+ xg=parseInt("0x"+str.charAt(2))
+ xb=parseInt("0x"+str.charAt(4))
+ rlschar=parseInt("0x"+str.charAt(1))
+ glschar=parseInt("0x"+str.charAt(3))
+ blschar=parseInt("0x"+str.charAt(5))
+ if(11<rlschar)redplus8();else{if(5>rlschar)rlschar=0;else rlschar=8}
+ temp=glschar;if(14>temp)glschar=12;else{glschar=0;inc_green()}if(11>temp)glschar=8;if(7>temp)glschar=4;if(3>temp)glschar=0;
+ if(11<blschar)blueplus8();else{if(5>blschar)blschar=0;else blschar=8}
+ document.form1.xred.value=" "+hex[xr]+hex[rlschar]
+ document.form1.xgreen.value=" "+hex[xg]+hex[glschar]
+ document.form1.xblue.value=" "+hex[xb]+hex[blschar]
+}
+function name_to_websafe(index)
+{
+ str=ws[index]
+ r216=str.charAt(1)
+ g216=str.charAt(3)
+ b216=str.charAt(5)
+ display_websafe()
+}
+function sixteen_bit_to_websafe()
+{
+ r216=hex[wsafe[xr]]
+ g216=hex[wsafe[xg]]
+ b216=hex[wsafe[xb]]
+ if(unsafe216()){r216="F";g216="F";b216="F"}
+ display_websafe()
+}
+function display_websafe()
+{
+ document.form1.wred.value=" "+r216+r216
+ document.form1.wgreen.value=" "+g216+g216
+ document.form1.wblue.value=" "+b216+b216
+ temp=""+r216+r216+g216+g216+b216+b216
+ if ("TEXT"==selector) text_216=temp; else bg_216=temp;
+}
+function save_bg_values(){tempr=xr;temprlschar=rlschar;tempg=xg;tempglschar=glschar;tempb=xb;tempblschar=blschar}
+function restore_bg_values(){xr=tempr;rlschar=temprlschar;xg=tempg;glschar=tempglschar;xb=tempb;blschar=tempblschar}
+function save_text_values(){txtr=xr;txtrlschar=rlschar;txtg=xg;txtglschar=glschar;txtb=xb;txtblschar=blschar}
+function restore_text_values(){xr=txtr;rlschar=txtrlschar;xg=txtg;glschar=txtglschar;xb=txtb;blschar=txtblschar}
+
+function pal(r,g,b)
+{
+ if(16==r){rlschar=15;xr=15}else{rlschar=0;xr=r}
+ if(16==g){glschar=15;xg=15}else{glschar=0;xg=g}
+ if(16==b){blschar=15;xb=15}else{blschar=0;xb=b}
+ if ("TEXT"==selector) text_color=text_16_bit; else bg_color=bg_16_bit;
+ clear_names()
+ set16()
+}
+function set16()
+{
+ self.focus()
+ clear_names()
+ mode16=true
+ colormode="16-BIT"
+ if ("TEXT"==selector) text_color=text_16_bit; else bg_color=bg_16_bit;
+ document.form1.radios[1].checked=true
+
+ hrgb="#"
+
+ if ("TEXT"==selector)
+ {
+  text_color=""+hex[xr]+hex[rlschar]+hex[xg]+hex[glschar]+hex[xb]+hex[blschar]
+  hrgb="#"+text_color
+  save_text_values()
+  document.fgColor=hrgb
+ }
+ else
+ {
+  bg_color=""+hex[xr]+hex[rlschar]+hex[xg]+hex[glschar]+hex[xb]+hex[blschar]
+  hrgb="#"+bg_color
+  save_bg_values()
+  document.bgColor=hrgb
+ }
+ set_decimal(hrgb)
+ sixteen_bit_to_websafe()
+ document.form1.xred.value=" "+hex[xr]+hex[rlschar]
+ document.form1.xgreen.value=" "+hex[xg]+hex[glschar]
+ document.form1.xblue.value=" "+hex[xb]+hex[blschar]
+}
+function set_BG()
+{
+ restore_bg_values()
+ selector="BGCOLOR"
+ document.form1.bgtext[0].checked=true
+ check_mode()
+}
+function set_TEXT()
+{
+ restore_text_values()
+ selector="TEXT"
+ document.form1.bgtext[1].checked=true
+ check_mode()
+}
+function check_mode()
+{
+ if ("CNAMES"==colormode) set_CNAMES()
+ else set16()
+}
+function set_WEB216()
+{
+ self.focus()
+ mode16=false
+ colormode="WEB216"
+ document.form1.radios[0].checked=true
+ clear_names()
+ document.form1.xred.value=""
+ document.form1.xgreen.value=""
+ document.form1.xblue.value=""
+ if ("TEXT"==selector)
+ {
+  document.fgColor="#"+text_216
+  text_color=text_216
+  set_decimal("#"+text_216)
+ }
+ else
+ {
+  document.bgColor="#"+bg_216
+  bg_color=bg_216
+  set_decimal("#"+bg_color)
+ }
+}
+function set_CNAMES()
+{
+ mode16=false
+ colormode="CNAMES"
+ document.form1.radios[2].checked=true
+ if ("TEXT"==selector)
+ {
+  text_color=text_name
+  bg(text_index,text_name)
+ }
+ else
+ {
+  bg_color=bg_name
+  bg(bg_index,bg_name)
+ }
+}
+function set_decimal(str)
+{
+ document.form1.dred.value=parseInt("0x"+str.charAt(1)+str.charAt(2))
+ document.form1.dgreen.value=parseInt("0x"+str.charAt(3)+str.charAt(4))
+ document.form1.dblue.value=parseInt("0x"+str.charAt(5)+str.charAt(6))
+}
+function init(){set_BG();check()}
+// -->
+//]]>
+</script>
+</head>
+<body bgcolor="#FFFFFF" text="#000080" link="#000000" alink="#000000" vlink="#000000" onload="init()" onunload="close_pop()">
+
+<form name="form1" action="">
+
+<table width="100%" border="0" cellspacing="0" cellpadding="12" summary="Layout table.">
+<tr>
+<td width="50%" class="borderbottom1" bgcolor="#FFFFFF" align="left" valign="top">
+<h1><b><i><font size="5" face="arial,sans-serif" color="#000099">Web <font color="#0099ff">C</font><font color="#00ccff">o</font><font color="#00cc33">l</font><font color="#ff9933">o</font><font color="#ff6600">r</font><font color="#ff0000">s</font></font></i></b><br />
+<span class="title">&nbsp;3&nbsp;in&nbsp;1&nbsp;&nbsp;Color&nbsp;Picker&nbsp;</span></h1></td>
+<td width="50%" class="borderbottom2" bgcolor="#F0F0F0" align="center" valign="top">
+<p class="s3">Color mode detected as: <input type="text" name="cmode" size="20" value=" JavaScript required" /></p></td>
+</tr><tr>
+<td width="50%" class="borderbottom3" valign="middle">
+<ul><li>Instructions for the color picker follow a brief summary of the three color types.<br /><br /></li><li>More information about the color palettes and factors to consider when choosing colors is given after the instructions.<br /><br /></li><li>By July 2005, less than 1% of the internet population were using 256 color mode, but a significant proportion are still using 16&nbsp;bit color mode (&nbsp;High Color&nbsp;).<br /><br /></li></ul>
+</td>
+<td width="50%" class="borderbottom4" bgcolor="#E0E0E0" align="center" valign="top">
+
+<table border="0" cellspacing="0" cellpadding="0" summary="Layout table.">
+<tr>
+<td colspan="5" align="left">
+<input type="button" value="  save  " onclick="save()" />
+<input type="button" value=" recall " onclick="recall()" />&nbsp;
+<input type="text" name="dred" size="3" value="" />
+<input type="text" name="dgreen" size="3" value="" />
+<input type="text" name="dblue" size="3" value="" />
+<input type="button" value=" lighter " onclick="lighten()" />&nbsp;<input type= "button" value=" darker " onclick="darken()" /><br />
+<br /></td>
+</tr><tr>
+<td colspan="3" class="s2" align="left"><input type="radio" name="radios" onclick="set_WEB216()" />Web 216 palette</td>
+<td rowspan="7">&nbsp; &nbsp;</td>
+<td rowspan="7" align="right" valign="top">
+<table border="0" cellspacing="0" cellpadding="1" summary="Layout table."><tr><td bgcolor="#FFFFFF" valign="top">
+<table border="0" cellspacing="1" cellpadding="0" width="100%" summary="Layout table.">
+<tr><td bgcolor="#000000"><a href="javascript:pal(0,0,0)">___</a></td><td bgcolor="#800000"><a href="javascript:pal(8,0,0)">___</a></td><td bgcolor="#C00000"><a href="javascript:pal(12,0,0)">___</a></td><td bgcolor="#FF0000"><a href="javascript:pal(16,0,0)">___</a></td><td bgcolor="#FF00C0"><a href="javascript:pal(16,0,12)">___</a></td><td bgcolor="#C000C0"><a href="javascript:pal(12,0,12)">___</a></td><td bgcolor="#8000C0"><a href="javascript:pal(8,0,12)">___</a></td><td bgcolor="#0000C0"><a href="javascript:pal(0,0,12)">___</a></td></tr>
+<tr><td bgcolor="#008000"><a href="javascript:pal(0,8,0)">___</a></td><td bgcolor="#808000"><a href="javascript:pal(8,8,0)">___</a></td><td bgcolor="#C08000"><a href="javascript:pal(12,8,0)">___</a></td><td bgcolor="#FF8000"><a href="javascript:pal(16,8,0)">___</a></td><td bgcolor="#FF80C0"><a href="javascript:pal(16,8,12)">___</a></td><td bgcolor="#C080C0"><a href="javascript:pal(12,8,12)">___</a></td><td bgcolor="#8080C0"><a href="javascript:pal(8,8,12)">___</a></td><td bgcolor="#0080C0"><a href="javascript:pal(0,8,12)">___</a></td></tr>
+<tr><td bgcolor="#00C000"><a href="javascript:pal(0,12,0)">___</a></td><td bgcolor="#80C000"><a href="javascript:pal(8,12,0)">___</a></td><td bgcolor="#C0C000"><a href="javascript:pal(12,12,0)">___</a></td><td bgcolor="#FFC000"><a href="javascript:pal(16,12,0)">___</a></td><td bgcolor="#FFC0C0"><a href="javascript:pal(16,12,12)">___</a></td><td bgcolor="#C0C0C0"><a href="javascript:pal(12,12,12)">___</a></td><td bgcolor="#80C0C0"><a href="javascript:pal(8,12,12)">___</a></td><td bgcolor="#00C0C0"><a href="javascript:pal(0,12,12)">___</a></td></tr>
+<tr><td bgcolor="#00FF00"><a href="javascript:pal(0,16,0)">___</a></td><td bgcolor="#80FF00"><a href="javascript:pal(8,16,0)">___</a></td><td bgcolor="#C0FF00"><a href="javascript:pal(12,16,0)">___</a></td><td bgcolor="#FFFF00"><a href="javascript:pal(16,16,0)">___</a></td><td bgcolor="#FFFFC0"><a href="javascript:pal(16,16,12)">___</a></td><td bgcolor="#C0FFC0"><a href="javascript:pal(12,16,12)">___</a></td><td bgcolor="#80FFC0"><a href="javascript:pal(8,16,12)">___</a></td><td bgcolor="#00FFC0"><a href="javascript:pal(0,16,12)">___</a></td></tr>
+<tr><td bgcolor="#00FF80"><a href="javascript:pal(0,16,8)">___</a></td><td bgcolor="#80FF80"><a href="javascript:pal(8,16,8)">___</a></td><td bgcolor="#C0FF80"><a href="javascript:pal(12,16,8)">___</a></td><td bgcolor="#FFFF80"><a href="javascript:pal(16,16,8)">___</a></td><td><a href="javascript:pal(16,16,16)">___</a></td><td bgcolor="#C0FFFF"><a href="javascript:pal(12,16,16)">___</a></td><td bgcolor="#80FFFF"><a href="javascript:pal(8,16,16)">___</a></td><td bgcolor="#00FFFF"><a href="javascript:pal(0,16,16)">___</a></td></tr>
+<tr><td bgcolor="#00C080"><a href="javascript:pal(0,12,8)">___</a></td><td bgcolor="#80C080"><a href="javascript:pal(8,12,8)">___</a></td><td bgcolor="#C0C080"><a href="javascript:pal(12,12,8)">___</a></td><td bgcolor="#FFC080"><a href="javascript:pal(16,12,8)">___</a></td><td bgcolor="#FFC0FF"><a href="javascript:pal(16,12,16)">___</a></td><td bgcolor="#C0C0FF"><a href="javascript:pal(12,12,16)">___</a></td><td bgcolor="#80C0FF"><a href="javascript:pal(8,12,16)">___</a></td><td bgcolor="#00C0FF"><a href="javascript:pal(0,12,16)">___</a></td></tr>
+<tr><td bgcolor="#008080"><a href="javascript:pal(0,8,8)">___</a></td><td bgcolor="#808080"><a href="javascript:pal(8,8,8)">___</a></td><td bgcolor="#C08080"><a href="javascript:pal(12,8,8)">___</a></td><td bgcolor="#FF8080"><a href="javascript:pal(16,8,8)">___</a></td><td bgcolor="#FF80FF"><a href="javascript:pal(16,8,16)">___</a></td><td bgcolor="#C080FF"><a href="javascript:pal(12,8,16)">___</a></td><td bgcolor="#8080FF"><a href="javascript:pal(8,8,16)">___</a></td><td bgcolor="#0080FF"><a href="javascript:pal(0,8,16)">___</a></td></tr>
+<tr><td bgcolor="#000080"><a href="javascript:pal(0,0,8)">___</a></td><td bgcolor="#800080"><a href="javascript:pal(8,0,8)">___</a></td><td bgcolor="#C00080"><a href="javascript:pal(12,0,8)">___</a></td><td bgcolor="#FF0080"><a href="javascript:pal(16,0,8)">___</a></td><td bgcolor="#FF00FF"><a href="javascript:pal(16,0,16)">___</a></td><td bgcolor="#C000FF"><a href="javascript:pal(12,0,16)">___</a></td><td bgcolor="#8000FF"><a href="javascript:pal(8,0,16)">___</a></td><td bgcolor="#0000FF"><a href="javascript:pal(0,0,16)">___</a></td></tr>
+</table>
+</td></tr></table>
+<br />
+</td>
+</tr><tr class="graybg">
+<td class="urd" align="center"><input type="text" name="wred" size="4" /></td>
+<td class="ugr" align="center"><input type="text" name="wgreen" size="4" /></td>
+<td class="ubl" align="center"><input type="text" name="wblue" size="4" /></td>
+</tr><tr>
+<td colspan="3" class="s2" align="left"><input type="radio" name="radios" onclick="set16()" />16-bit palette</td>
+</tr><tr class="graybg">
+<td align="center"><input type="text" name="xred" size="4" /></td>
+<td align="center"><input type="text" name="xgreen" size="4" /></td>
+<td align="center"><input type="text" name="xblue" size="4" /></td>
+</tr><tr>
+<td nowrap="nowrap"><input type="button" value="+ 1 " onclick="inc_rh()" /><input type="button" value="+ 8 " onclick="rplus8()" /></td>
+<td nowrap="nowrap"><input type="button" value="+ 1 " onclick="inc_gh()" /><input type="button" value="+ 4 " onclick="gplus4()" /></td>
+<td nowrap="nowrap"><input type="button" value="+ 1 " onclick="inc_bh()" /><input type="button" value="+ 8 " onclick="bplus8()" /></td>
+</tr><tr>
+<td nowrap="nowrap" align="center"><input type="button" value=" - 1 " onclick="dec_rh()" /><input type="button" value=" - 8 " onclick="rminus8()" /></td>
+<td nowrap="nowrap" align="center"><input type="button" value=" - 1 " onclick="dec_gh()" /><input type="button" value=" - 4 " onclick="gminus4()" /></td>
+<td nowrap="nowrap" align="center"><input type="button" value=" - 1 " onclick="dec_bh()" /><input type="button" value=" - 8 " onclick="bminus8()" /></td>
+</tr><tr>
+<td colspan="3" valign="bottom" class="s2" align="left"><input type="radio" name="radios" onclick="set_CNAMES()" />Named colors</td>
+</tr><tr>
+<td colspan="5" align="left"><input type="text" name="cname" size="22" />&nbsp; <input type="text" name="chex" size="8" />&nbsp;<input type="radio" name="bgtext" onclick="set_BG()" /><input type="button" value="  BG  " onclick="set_BG()" />&nbsp;<input type="button" value=" Text " onclick="set_TEXT()" /><input type="radio" name="bgtext" onclick="set_TEXT()" /></td>
+</tr>
+</table>
+</td></tr></table>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="12" summary="Layout table.">
+<tr>
+<td width="50%" valign="top">
+<h2>Three color types</h2>
+<p>You can choose from 140 color names by clicking on the chart, or you can pick a starting color from the 16&nbsp;bit palette and adjust it using the buttons marked plus or minus <b>[&nbsp;1&nbsp;]</b>, <b>[&nbsp;4&nbsp;]</b> and <b>[&nbsp;8&nbsp;]</b>.</p>
+<p>Actually, there are only 138 named colors because two of them have alternative names:&nbsp; Aqua&nbsp;=&nbsp;Cyan,&nbsp; and&nbsp; Fuchsia&nbsp;=&nbsp;Magenta.</p>
+
+<p>On the mixer panel the <em>Web 216</em> equivalent of a named color or a 16&nbsp;bit color is presented as an alternative choice.&nbsp; Please note:&nbsp; it does <em>not</em> necessarily show what the selected color would change to in 256 color mode, because there are 256 possible alternatives, not 216.</p>
+<h2>How to use the color picker</h2>
+<ul>
+<li>The first selected color is the named color "White". You can change the background color of the page by clicking on color names or on the 16&nbsp;bit palette. When color names are selected the 16&nbsp;bit equivalent will be shown also.<br /><br /></li>
+<li>Alternatively, click on <input type="radio" checked="checked" /> to change the color type. If you choose "16&nbsp;bit palette" or "Web 216 palette", the color name will be replaced by the words "select named colors". If "Web 216 palette" is selected, the 16&nbsp;bit values go blank until another color type is selected.<br /><br /></li>
+<li>Change the text color by clicking on <b>[&nbsp;Text&nbsp;]</b>.&nbsp; <i>Not all browsers can change the text color.</i><br /><br /></li>
+<li>Switch back to changing the background color by clicking on <b>[&nbsp;BG&nbsp;]</b>.<br /><br /></li>
+<li>In 16&nbsp;bit color mode you can make colors <b>[&nbsp;lighter&nbsp;]</b> or <b>[&nbsp;darker&nbsp;]</b>.<br /><br /></li>
+<li>Click <b>[&nbsp;save&nbsp;]</b> to save a color combination.<br /><br /></li>
+<li>Click <b>[&nbsp;recall&nbsp;]</b> to view the last 10 combinations in a <span class="nobreak">pop-up</span> window.<br /><br />
+<hr />
+The decimal RGB equivalent of the selected color is shown in the top row of buttons.<hr /><br /></li>
+</ul>
+<h2>Web 216 palette</h2>
+<p>In Internet Explorer for Windows the 256 color palette contains 18 colors which are lighter than CCCCCC, and the 16&nbsp;bit palette contains more than 600, but the traditional <em>Web 216</em> palette only has 7 lighter colors. For this reason, the <em>Web 216</em> equivalent on the mixer panel is set to FFFFFF (white) when there is no close match.&nbsp; Above CCCCCC, each browser uses different substitute colors in 256 color mode.</p>
+
+<h2>The 16&nbsp;bit palette</h2>
+<p>Sixteen bit values are divided into Red, Green &amp; Blue components as shown below:</p>
+<pre>
+5 bits  -  32 steps  -  Red
+6 bits  -  64 steps  -  Green
+5 bits  -  32 steps  -  Blue
+
+32 x 64 x 32 = 65536</pre>
+<p>On Microsoft Windows systems the first increment from zero is a <em>double step</em>. Red &amp; Blue increment in steps of 8, and Green increments in steps of 4 (&nbsp;hex:&nbsp;4,&nbsp;8,&nbsp;C&nbsp;). The final value is set to FF.</p>
+<h2>Image colors in 16&nbsp;bit mode</h2>
+<p>Image colors can shift in 16&nbsp;bit mode, resulting in a mismatch with the background. Using transparency in GIF/PNG images is the most flexible solution. Alternatively, if you have image software which can edit the color palette, subtract 1 from the RGB components of the 16&nbsp;bit color that needs to blend with a 16&nbsp;bit background color on the page.&nbsp; Grays in an image aquire a colored tinge unless the RGB values all shift to multiples of&nbsp;8.</p>
+<h2>140 color names</h2>
+<p>When used in HTML tags or CSS, the color names are not case sensitive. There is no systematic naming convention for the color names. For example:</p>
+<p>"<em>lightgrey</em>" is spelled with an "<em>e</em>"<br />
+"<em>gray</em>" is spelled with an "<em>a</em>"<br />
+"<em>lightpink</em>" is darker than "<em>pink</em>"</p>
+<p>You can scroll through the list of color names using the <b>[&nbsp;Page Down&nbsp;]</b> and <b>[&nbsp;Page&nbsp;Up&nbsp;]</b> keys on your keyboard.</p>
+<p>Most of the named colors can only be reproduced exactly on a 'True Color' display (&nbsp;24/32&nbsp;bit&nbsp;).&nbsp; On a 'High Color' display (&nbsp;16&nbsp;bit&nbsp;) most browsers will approximate them with a 'dither' pattern, but on a 256 color display (&nbsp;8&nbsp;bit&nbsp;) the differences can be quite dramatic. It is always a good policy to test web pages in 256 color mode.</p>
+<h2>CSS&nbsp;3&nbsp;: the color names as a standard</h2>
+<p>The World Wide Web Consortium (<i>www.w3c.org</i>) is the organization which defines official standards for mark-up languages. For web pages, W3C recommends that the information content and the style of presentation - colors, fonts, layouts, etc. - should be marked up separately. The recommended method for defining stylistic elements is to use Cascading Style Sheets (CSS). The list of 140 color names is part of the recommendation for CSS&nbsp;3, the third level of the CSS specification.<br /><br /></p>
+</td>
+<td width="50%" bgcolor="#E0E0E0" align="center" valign="top">
+
+<table border="0" cellspacing="0" cellpadding="0" summary="Layout table."><tr><td align="left">
+<table border="0" cellspacing="1" cellpadding="3" width="100%" summary="Layout table.">
+<tr><td style="background:snow"><a href="javascript:bg(0,'snow')" class="s1">snow</a></td><td style="background:aliceblue"><a href="javascript:bg(1,'aliceblue')" class="s1">aliceblue</a></td><td style="background:azure"><a href="javascript:bg(2,'azure')" class="s1">azure</a></td></tr>
+<tr><td style="background:floralwhite"><a href="javascript:bg(3,'floralwhite')" class="s1">floralwhite</a></td><td style="background:ghostwhite"><a href="javascript:bg(4,'ghostwhite')" class="s1">ghostwhite</a></td><td style="background:mintcream"><a href="javascript:bg(5,'mintcream')" class="s1">mintcream</a></td></tr>
+<tr><td style="background:lavenderblush"><a href="javascript:bg(6,'lavenderblush')" class="s1">lavenderblush</a></td><td style="background:lavender"><a href="javascript:bg(7,'lavender')" class="s1">lavender</a></td><td style="background:honeydew"><a href="javascript:bg(8,'honeydew')" class="s1">honeydew</a></td></tr>
+<tr><td style="background:oldlace"><a href="javascript:bg(9,'oldlace')" class="s1">oldlace</a></td><td style="background:seashell"><a href="javascript:bg(10,'seashell')" class="s1">seashell</a></td><td style="background:linen"><a href="javascript:bg(11,'linen')" class="s1">linen</a></td></tr>
+<tr><td style="background:ivory"><a href="javascript:bg(12,'ivory')" class="s1">ivory</a></td><td style="background:lightyellow"><a href="javascript:bg(13,'lightyellow')" class="s1">lightyellow</a></td><td style="background:lemonchiffon"><a href="javascript:bg(14,'lemonchiffon')" class="s1">lemonchiffon</a></td></tr>
+<tr><td style="background:cornsilk"><a href="javascript:bg(15,'cornsilk')" class="s1">cornsilk</a></td><td style="background:papayawhip"><a href="javascript:bg(16,'papayawhip')" class="s1">papayawhip</a></td><td style="background:blanchedalmond"><a href="javascript:bg(17,'blanchedalmond')" class="s1">blanchedalmond</a></td></tr>
+<tr><td style="background:beige"><a href="javascript:bg(18,'beige')" class="s1">beige</a></td><td style="background:navajowhite"><a href="javascript:bg(19,'navajowhite')" class="s1">navajowhite</a></td><td style="background:bisque"><a href="javascript:bg(20,'bisque')" class="s1">bisque</a></td></tr>
+<tr><td style="background:antiquewhite"><a href="javascript:bg(21,'antiquewhite')" class="s1">antiquewhite</a></td><td style="background:moccasin"><a href="javascript:bg(22,'moccasin')" class="s1">moccasin</a></td><td style="background:peachpuff"><a href="javascript:bg(23,'peachpuff')" class="s1">peachpuff</a></td></tr>
+<tr><td style="background:wheat"><a href="javascript:bg(24,'wheat')" class="s1">wheat</a></td><td style="background:burlywood"><a href="javascript:bg(25,'burlywood')" class="s1">burlywood</a></td><td style="background:tan"><a href="javascript:bg(26,'tan')" class="s1">tan</a></td></tr>
+<tr><td colspan="3" align="center"><small>&nbsp;</small></td></tr>
+<tr><td style="background:yellow"><a href="javascript:bg(27,'yellow')" class="s1">yellow</a></td><td style="background:gold"><a href="javascript:bg(28,'gold')" class="s1">gold</a></td><td style="background:orange"><a href="javascript:bg(29,'orange')" class="s1">orange</a></td></tr>
+<tr><td style="background:darkorange"><a href="javascript:bg(30,'darkorange')" class="s1">darkorange</a></td><td style="background:tomato"><a href="javascript:bg(31,'tomato')" class="s1">tomato</a></td><td style="background:orangered"><a href="javascript:bg(32,'orangered')" class="s1">orangered</a></td></tr>
+<tr><td style="background:red"><a href="javascript:bg(33,'red')" class="s1">red</a></td><td style="background:crimson"><a href="javascript:bg(34,'crimson')" class="s1">crimson</a></td><td style="background:firebrick"><a href="javascript:bg(35,'firebrick')" class="s1">firebrick</a></td></tr>
+<tr><td style="background:darkred"><a href="javascript:bg(36,'darkred')" class="s0">darkred</a></td><td style="background:brown"><a href="javascript:bg(37,'brown')" class="s1">brown</a></td><td style="background:saddlebrown"><a href="javascript:bg(38,'saddlebrown')" class="s1">saddlebrown</a></td></tr>
+<tr><td style="background:maroon"><a href="javascript:bg(39,'maroon')" class="s0">maroon</a></td><td style="background:chocolate"><a href="javascript:bg(40,'chocolate')" class="s1">chocolate</a></td><td style="background:sienna"><a href="javascript:bg(41,'sienna')" class="s1">sienna</a></td></tr>
+<tr><td style="background:indianred"><a href="javascript:bg(42,'indianred')" class="s1">indianred</a></td><td style="background:sandybrown"><a href="javascript:bg(43,'sandybrown')" class="s1">sandybrown</a></td><td style="background:peru"><a href="javascript:bg(44,'peru')" class="s1">peru</a></td></tr>
+<tr><td style="background:salmon"><a href="javascript:bg(45,'salmon')" class="s1">salmon</a></td><td style="background:lightsalmon"><a href="javascript:bg(46,'lightsalmon')" class="s1">lightsalmon</a></td><td style="background:darksalmon"><a href="javascript:bg(47,'darksalmon')" class="s1">darksalmon</a></td></tr>
+<tr><td style="background:coral"><a href="javascript:bg(48,'coral')" class="s1">coral</a></td><td style="background:lightcoral"><a href="javascript:bg(49,'lightcoral')" class="s1">lightcoral</a></td><td style="background:rosybrown"><a href="javascript:bg(50,'rosybrown')" class="s1">rosybrown</a></td></tr>
+<tr><td colspan="3" align="center"><small>&nbsp;</small></td></tr>
+<tr><td style="background:palegoldenrod"><a href="javascript:bg(51,'palegoldenrod')" class="s1">palegoldenrod</a></td><td style="background:goldenrod"><a href="javascript:bg(52,'goldenrod')" class="s1">goldenrod</a></td><td style="background:darkgoldenrod"><a href="javascript:bg(53,'darkgoldenrod')" class="s1">darkgoldenrod</a></td></tr>
+<tr><td style="background:lightgoldenrodyellow"><a href="javascript:bg(54,'lightgoldenrodyellow')" class="s1">lightgoldenrodyellow</a></td><td style="background:khaki"><a href="javascript:bg(55,'khaki')" class="s1">khaki</a></td><td style="background:darkkhaki"><a href="javascript:bg(56,'darkkhaki')" class="s1">darkkhaki</a></td></tr>
+<tr><td style="background:olive"><a href="javascript:bg(57,'olive')" class="s1">olive</a></td><td style="background:olivedrab"><a href="javascript:bg(58,'olivedrab')" class="s1">olivedrab</a></td><td style="background:darkolivegreen"><a href="javascript:bg(59,'darkolivegreen')" class="s1">darkolivegreen</a></td></tr>
+<tr><td style="background:forestgreen"><a href="javascript:bg(60,'forestgreen')" class="s1">forestgreen</a></td><td style="background:green"><a href="javascript:bg(61,'green')" class="s1">green</a></td><td style="background:darkgreen"><a href="javascript:bg(62,'darkgreen')" class="s1">darkgreen</a></td></tr>
+<tr><td style="background:greenyellow"><a href="javascript:bg(63,'greenyellow')" class="s1">greenyellow</a></td><td style="background:yellowgreen"><a href="javascript:bg(64,'yellowgreen')" class="s1">yellowgreen</a></td><td style="background:limegreen"><a href="javascript:bg(65,'limegreen')" class="s1">limegreen</a></td></tr>
+<tr><td style="background:chartreuse"><a href="javascript:bg(66,'chartreuse')" class="s1">chartreuse</a></td><td style="background:lawngreen"><a href="javascript:bg(67,'lawngreen')" class="s1">lawngreen</a></td><td style="background:lime"><a href="javascript:bg(68,'lime')" class="s1">lime</a></td></tr>
+<tr><td style="background:lightgreen"><a href="javascript:bg(69,'lightgreen')" class="s1">lightgreen</a></td><td style="background:palegreen"><a href="javascript:bg(70,'palegreen')" class="s1">palegreen</a></td><td style="background:springgreen"><a href="javascript:bg(71,'springgreen')" class="s1">springgreen</a></td></tr>
+<tr><td style="background:aquamarine"><a href="javascript:bg(72,'aquamarine')" class="s1">aquamarine</a></td><td style="background:mediumaquamarine"><a href="javascript:bg(73,'mediumaquamarine')" class="s1">mediumaquamarine</a></td><td style="background:mediumspringgreen"><a href="javascript:bg(74,'mediumspringgreen')" class="s1">mediumspringgreen</a></td></tr>
+<tr><td style="background:seagreen"><a href="javascript:bg(75,'seagreen')" class="s1">seagreen</a></td><td style="background:mediumseagreen"><a href="javascript:bg(76,'mediumseagreen')" class="s1">mediumseagreen</a></td><td style="background:darkseagreen"><a href="javascript:bg(77,'darkseagreen')" class="s1">darkseagreen</a></td></tr>
+<tr><td colspan="3" align="center"><small>&nbsp;</small></td></tr>
+<tr><td style="background:lightseagreen"><a href="javascript:bg(78,'lightseagreen')" class="s1">lightseagreen</a></td><td style="background:mediumturquoise"><a href="javascript:bg(79,'mediumturquoise')" class="s1">mediumturquoise</a></td><td style="background:darkturquoise"><a href="javascript:bg(80,'darkturquoise')" class="s1">darkturquoise</a></td></tr>
+<tr><td style="background:paleturquoise"><a href="javascript:bg(81,'paleturquoise')" class="s1">paleturquoise</a></td><td style="background:turquoise"><a href="javascript:bg(82,'turquoise')" class="s1">turquoise</a></td><td style="background:cadetblue"><a href="javascript:bg(83,'cadetblue')" class="s1">cadetblue</a></td></tr>
+<tr><td style="background:lightcyan"><a href="javascript:bg(84,'lightcyan')" class="s1">lightcyan</a></td><td style="background:aqua"><a href="javascript:bg(85,'aqua')" class="s1">cyan&nbsp;-&nbsp;aqua</a></td><td style="background:darkcyan"><a href="javascript:bg(86,'darkcyan')" class="s1">darkcyan</a></td></tr>
+<tr><td style="background:lightblue"><a href="javascript:bg(87,'lightblue')" class="s1">lightblue</a></td><td style="background:powderblue"><a href="javascript:bg(88,'powderblue')" class="s1">powderblue</a></td><td style="background:teal"><a href="javascript:bg(89,'teal')" class="s1">teal</a></td></tr>
+<tr><td style="background:lightskyblue"><a href="javascript:bg(90,'lightskyblue')" class="s1">lightskyblue</a></td><td style="background:skyblue"><a href="javascript:bg(91,'skyblue')" class="s1">skyblue</a></td><td style="background:deepskyblue"><a href="javascript:bg(92,'deepskyblue')" class="s1">deepskyblue</a></td></tr>
+<tr><td style="background:cornflowerblue"><a href="javascript:bg(93,'cornflowerblue')" class="s1">cornflowerblue</a></td><td style="background:royalblue"><a href="javascript:bg(94,'royalblue')" class="s1">royalblue</a></td><td style="background:dodgerblue"><a href="javascript:bg(95,'dodgerblue')" class="s1">dodgerblue</a></td></tr>
+<tr><td style="background:darkblue"><a href="javascript:bg(96,'darkblue')" class="s0">darkblue</a></td><td style="background:mediumblue"><a href="javascript:bg(97,'mediumblue')" class="s0">mediumblue</a></td><td style="background:blue"><a href="javascript:bg(98,'blue')" class="s0">blue</a></td></tr>
+<tr><td style="background:indigo"><a href="javascript:bg(99,'indigo')" class="s0">indigo</a></td><td style="background:midnightblue"><a href="javascript:bg(100,'midnightblue')" class="s0">midnightblue</a></td><td style="background:navy"><a href="javascript:bg(101,'navy')" class="s0">navy</a></td></tr>
+<tr><td colspan="3" align="center"><small>&nbsp;</small></td></tr>
+<tr><td style="background:darkviolet"><a href="javascript:bg(102,'darkviolet')" class="s1">darkviolet</a></td><td style="background:blueviolet"><a href="javascript:bg(103,'blueviolet')" class="s1">blueviolet</a></td><td style="background:violet"><a href="javascript:bg(104,'violet')" class="s1">violet</a></td></tr>
+<tr><td style="background:darkorchid"><a href="javascript:bg(105,'darkorchid')" class="s1">darkorchid</a></td><td style="background:mediumorchid"><a href="javascript:bg(106,'mediumorchid')" class="s1">mediumorchid</a></td><td style="background:orchid"><a href="javascript:bg(107,'orchid')" class="s1">orchid</a></td></tr>
+<tr><td style="background:fuchsia"><a href="javascript:bg(108,'fuchsia')" class="s1">magenta&nbsp;-&nbsp;fuchsia</a></td><td style="background:mediumpurple"><a href="javascript:bg(109,'mediumpurple')" class="s1">mediumpurple</a></td><td style="background:plum"><a href="javascript:bg(110,'plum')" class="s1">plum</a></td></tr>
+<tr><td style="background:darkmagenta"><a href="javascript:bg(111,'darkmagenta')" class="s1">darkmagenta</a></td><td style="background:purple"><a href="javascript:bg(112,'purple')" class="s0">purple</a></td><td style="background:thistle"><a href="javascript:bg(113,'thistle')" class="s1">thistle</a></td></tr>
+<tr><td style="background:mediumvioletred"><a href="javascript:bg(114,'mediumvioletred')" class="s1">mediumvioletred</a></td><td style="background:deeppink"><a href="javascript:bg(115,'deeppink')" class="s1">deeppink</a></td><td style="background:hotpink"><a href="javascript:bg(116,'hotpink')" class="s1">hotpink</a></td></tr>
+<tr><td style="background:palevioletred"><a href="javascript:bg(117,'palevioletred')" class="s1">palevioletred</a></td><td style="background:lightpink"><a href="javascript:bg(118,'lightpink')" class="s1">lightpink</a></td><td style="background:pink"><a href="javascript:bg(119,'pink')" class="s1">pink</a></td></tr>
+<tr><td colspan="3" align="center"><small>&nbsp;</small></td></tr>
+<tr><td style="background:lightsteelblue"><a href="javascript:bg(120,'lightsteelblue')" class="s1">lightsteelblue</a></td><td style="background:steelblue"><a href="javascript:bg(121,'steelblue')" class="s1">steelblue</a></td><td style="background:mistyrose"><a href="javascript:bg(122,'mistyrose')" class="s1">mistyrose</a></td></tr>
+<tr><td style="background:mediumslateblue"><a href="javascript:bg(123,'mediumslateblue')" class="s1">mediumslateblue</a></td><td style="background:slateblue"><a href="javascript:bg(124,'slateblue')" class="s1">slateblue</a></td><td style="background:darkslateblue"><a href="javascript:bg(125,'darkslateblue')" class="s0">darkslateblue</a></td></tr>
+<tr><td style="background:lightslategray"><a href="javascript:bg(126,'lightslategray')" class="s1">lightslategray</a></td><td style="background:slategray"><a href="javascript:bg(127,'slategray')" class="s1">slategray</a></td><td style="background:darkslategray"><a href="javascript:bg(128,'darkslategray')" class="s0">darkslategray</a></td></tr>
+<tr><td style="background:white"><a href="javascript:bg(129,'white')" class="s1">white</a></td><td style="background:whitesmoke"><a href="javascript:bg(130,'whitesmoke')" class="s1">whitesmoke</a></td><td style="background:gainsboro"><a href="javascript:bg(131,'gainsboro')" class="s1">gainsboro</a></td></tr>
+<tr><td style="background:lightgrey"><a href="javascript:bg(132,'lightgrey')" class="s1">lightgrey</a></td><td style="background:silver"><a href="javascript:bg(133,'silver')" class="s1">silver</a></td><td style="background:darkgray"><a href="javascript:bg(134,'darkgray')" class="s1">darkgray</a></td></tr>
+<tr><td style="background:gray"><a href="javascript:bg(135,'gray')" class="s1">gray</a></td><td style="background:dimgray"><a href="javascript:bg(136,'dimgray')" class="s1">dimgray</a></td><td style="background:black"><a href="javascript:bg(137,'black')" class="s0">black</a></td></tr>
+<tr><td colspan="3" align="center"><small>&nbsp;</small></td></tr>
+</table></td></tr></table>
+
+<script type="text/javascript" language="JavaScript"><!--
+scroll_top()
+//--></script>
+
+</td></tr></table>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="6" summary="Layout table."><tr>
+<td bgcolor="#D0D0D0" align="center"><p style="color:gray">&copy; 2004, Kerry&nbsp;Watson - <a style="color:#00c" href="http://www.mywebsite.force9.co.uk/web-colors/">Web Colors Homepage</a></p></td>
+</tr></table>
+
+</form></body></html>
