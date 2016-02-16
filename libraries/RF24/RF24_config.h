@@ -38,7 +38,7 @@
   #include "utility/includes.h"
 
 //ATTiny  
-#elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__)
+#elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__) || defined(__AVR_ATtiny2313__) || defined(__AVR_ATtiny4313__)
   
   #define RF24_TINY
   #include "utility/ATTiny/RF24_arch_config.h"
@@ -115,17 +115,17 @@
 // Progmem is Arduino-specific
 // Arduino DUE is arm and does not include avr/pgmspace
 #if defined (ARDUINO_ARCH_ESP8266)
-  #include <pgmspace.h>  
-  
-  typedef uint16_t prog_uint16_t;
+
   #define PSTR(x) (x)
+  #define printf Serial.printf
+  #define sprintf(...) os_sprintf( __VA_ARGS__ )
   #define printf_P printf
   #define strlen_P strlen  
   #define PROGMEM
   #define pgm_read_byte(addr) (*(const unsigned char *)(addr))
   #define pgm_read_word(p) (*(p))
   #define PRIPSTR "%s"
-  
+
 #elif defined(ARDUINO) && ! defined(__arm__) && !defined (__ARDUINO_X86__)
 	#include <avr/pgmspace.h>
 	#define PRIPSTR "%S"

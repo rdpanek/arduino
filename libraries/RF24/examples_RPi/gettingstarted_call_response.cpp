@@ -17,6 +17,7 @@ TMRh20 2014 - Updated to work with optimized RF24 Arduino library
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <unistd.h>
 #include <RF24/RF24.h>
 
 using namespace std;
@@ -81,7 +82,7 @@ uint8_t counter = 1;                                                          //
 int main(int argc, char** argv){
 
 
-  printf("RPi/RF24/examples/gettingstarted_call_response\n");
+  cout << "RPi/RF24/examples/gettingstarted_call_response\n";
   radio.begin();
   radio.enableAckPayload();               // Allow optional ack payloads
   radio.enableDynamicPayloads();

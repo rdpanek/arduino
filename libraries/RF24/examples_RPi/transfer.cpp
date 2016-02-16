@@ -17,7 +17,7 @@ TMRh20 2014
 #include <sstream>
 #include <string>
 #include <RF24/RF24.h>
-
+#include <unistd.h>
 
 using namespace std;
 //
@@ -79,7 +79,7 @@ int main(int argc, char** argv){
 
   // Print preamble:
 
-  printf("RF24/examples/Transfer/\n");
+  cout << "RF24/examples/Transfer/\n";
 
   radio.begin();                           // Setup and configure rf radio
   radio.setChannel(1);

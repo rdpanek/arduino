@@ -566,17 +566,10 @@ void RF24::printDetails(void)
   print_byte_register(PSTR("CONFIG\t"),CONFIG);
   print_byte_register(PSTR("DYNPD/FEATURE"),DYNPD,2);
 
-#if defined(__arm__) || defined (RF24_LINUX) || defined (__ARDUINO_X86__) || defined(LITTLEWIRE) || defined (RF24_BBB)
-  printf_P(PSTR("Data Rate\t = %s\r\n"),pgm_read_word(&rf24_datarate_e_str_P[getDataRate()]));
-  printf_P(PSTR("Model\t\t = %s\r\n"),pgm_read_word(&rf24_model_e_str_P[isPVariant()]));
-  printf_P(PSTR("CRC Length\t = %s\r\n"),pgm_read_word(&rf24_crclength_e_str_P[getCRCLength()]));
-  printf_P(PSTR("PA Power\t = %s\r\n"),  pgm_read_word(&rf24_pa_dbm_e_str_P[getPALevel()]));
-#else
-  printf_P(PSTR("Data Rate\t = %S\r\n"), pgm_read_word(&rf24_datarate_e_str_P[getDataRate()]));
-  printf_P(PSTR("Model\t\t = %S\r\n"),   pgm_read_word(&rf24_model_e_str_P[isPVariant()]));
-  printf_P(PSTR("CRC Length\t = %S\r\n"),pgm_read_word(&rf24_crclength_e_str_P[getCRCLength()]));
-  printf_P(PSTR("PA Power\t = %S\r\n"),  pgm_read_word(&rf24_pa_dbm_e_str_P[getPALevel()]));
-#endif
+  printf_P(PSTR("Data Rate\t = "PRIPSTR"\r\n"),pgm_read_word(&rf24_datarate_e_str_P[getDataRate()]));
+  printf_P(PSTR("Model\t\t = "PRIPSTR"\r\n"),pgm_read_word(&rf24_model_e_str_P[isPVariant()]));
+  printf_P(PSTR("CRC Length\t = "PRIPSTR"\r\n"),pgm_read_word(&rf24_crclength_e_str_P[getCRCLength()]));
+  printf_P(PSTR("PA Power\t = "PRIPSTR"\r\n"),  pgm_read_word(&rf24_pa_dbm_e_str_P[getPALevel()]));
 
 }
 
@@ -1563,16 +1556,21 @@ void RF24::setRetries(uint8_t delay, uint8_t count)
 #	define DO   5   // PA5
 #	define USCK 6   // PA4
 #	define SS   3   // PA7
+#elif defined(__AVR_ATtiny2313__) || defined(__AVR_ATtiny4313__)
+// these depend on the core used (check pins_arduino.h)
+// tested with google-code core
+#	define DI   14  // PB5
+#	define DO   15  // PB6
+#	define USCK 16  // PB7
+#	define SS   13  // PB4
 #endif
 
 #if defined(RF24_TINY)
 
 void SPIClass::begin() {
 
-  digitalWrite(SS, HIGH);
   pinMode(USCK, OUTPUT);
   pinMode(DO, OUTPUT);
-  pinMode(SS, OUTPUT);
   pinMode(DI, INPUT);
   USICR = _BV(USIWM0);
 
