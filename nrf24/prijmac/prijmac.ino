@@ -11,7 +11,7 @@ Enrf24 radio(40, 53, 41);
 // duelaminove 
 //Enrf24 radio(9, 10, 6);
 //const uint8_t rxaddr[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0x01 };
-char rxaddr[] = {'g','w','-','0','1'};
+char rxaddr[] = {'p','a','n','i','o','t'};
 
 String nrfMessage;
 String state;
@@ -19,7 +19,9 @@ int countOfMessage = 00;
 const char *str_on = "ON";
 const char *str_off = "OFF";
 
-U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NO_ACK);
+//U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NO_ACK);
+//U8GLIB_ILI9325D_320x240 u8g(U8G_I2C_OPT_NO_ACK);
+U8GLIB_UC1611_DOGM240 u8g(U8G_I2C_OPT_NONE);
  
 void dump_radio_status_to_serialport(uint8_t);
  

@@ -1,54 +1,25 @@
-/* 
- * //////////////////////////////////////////////////
- * //making sense of the Parallax PIR sensor's output
- * //////////////////////////////////////////////////
- *
- * Switches a LED according to the state of the sensors output pin.
- * Determines the beginning and end of continuous motion sequences.
- *
- * @author: Kristian Gohlke / krigoo (_) gmail (_) com / http://krx.at
- * @date:   3. September 2006 
- *
- * kr1 (cleft) 2006 
- * released under a creative commons "Attribution-NonCommercial-ShareAlike 2.0" license
- * http://creativecommons.org/licenses/by-nc-sa/2.0/de/
- *
- *
- * The Parallax PIR Sensor is an easy to use digital infrared motion sensor module. 
- * (http://www.parallax.com/detail.asp?product_id=555-28027)
- *
- * The sensor's output pin goes to HIGH if motion is present.
- * However, even if motion is present it goes to LOW from time to time, 
- * which might give the impression no motion is present. 
- * This program deals with this issue by ignoring LOW-phases shorter than a given time, 
- * assuming continuous motion is present during these phases.
- *  
- */
-
-/////////////////////////////
-//VARS
 
 //the time when the sensor outputs a low impulse
 long unsigned int lowIn;         
 
 //the amount of milliseconds the sensor has to be low 
 //before we assume all motion has stopped
-long unsigned int pause = 30000;  
+long unsigned int pause = 2000;  
 
 boolean lockLow = true;
 boolean takeLowTime;  
 
-int pirPin = 8;    //the digital pin connected to the PIR sensor's output
-int ledPin = 13;
-int relay = 12;
-int buzz = 11;
+int pirPin = 4;    //the digital pin connected to the PIR sensor's output
+int ledPin = 3;
+int relay = 2;
+int buzz = 1;
 int x = 0;
 
 
 /////////////////////////////
 //SETUP
 void setup(){
-  Serial.begin(9600);
+  //Serial.begin(9600);
   pinMode(pirPin, INPUT);
   pinMode(ledPin, OUTPUT);
   pinMode(relay, OUTPUT);
@@ -60,28 +31,35 @@ void setup(){
   do
   {
     digitalWrite(ledPin, HIGH);
-    delay(50);
+    delay(5);
     digitalWrite(ledPin, LOW);
-    delay(50);
+    delay(5);
     x++;
   
   } while (x < 3);
+
+  // on relay before pir will be ready
+  digitalWrite(relay, HIGH); 
+  delay(2000);
+  digitalWrite(relay, LOW);
+  
 }
 
 ////////////////////////////
 //LOOP
 void loop(){
 
+     //Serial.println(digitalRead(pirPin));
      if(digitalRead(pirPin) == HIGH){
        digitalWrite(ledPin, HIGH);   //the led visualizes the sensors output pin state
        digitalWrite(relay, HIGH);
        if(lockLow){  
          //makes sure we wait for a transition to LOW before any further output is made:
          lockLow = false;            
-         Serial.println("---");
-         Serial.print("motion detected at ");
-         Serial.print(millis()/1000);
-         Serial.println(" sec"); 
+         //Serial.println("---");
+         //Serial.print("motion detected at ");
+         //Serial.print(millis()/1000);
+         //Serial.println(" sec"); 
          delay(50);
          }         
          takeLowTime = true;
@@ -100,17 +78,18 @@ void loop(){
            //makes sure this block of code is only executed again after 
            //a new motion sequence has been detected
            lockLow = true;                        
-           Serial.print("motion ended at ");      //output
-           Serial.print((millis() - pause)/1000);
-           Serial.println(" sec");
+           //Serial.print("motion ended at ");      //output
+           //Serial.print((millis() - pause)/1000);
+           //Serial.println(" sec");
            digitalWrite(buzz, HIGH);
-           delay(50);
+           delay(5);
            digitalWrite(buzz, LOW);
            }
        }
 
     if ( lockLow == true && digitalRead(pirPin) == LOW ) {
-      delay(10000);
+      delay(100);
       digitalWrite(relay, LOW);  
     }
   }
+

@@ -37,11 +37,10 @@ Enrf24 radio(40, 53, 41);
 //const uint8_t rxaddr[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0x01 };
 char rxaddr[] = {'p','a','n','i','o','t'};
 
-String nrfMessage;
+boolean modulState;
 String state;
-int countOfMessage = 00;
-const char *str_on = "ON";
-const char *str_off = "OFF";
+int stateOfRelay = 0;
+String relaySetSwitchCommand = "relay:relay:set:";
  
 void dump_radio_status_to_serialport(uint8_t);
  
@@ -54,8 +53,6 @@ void setup() {
   tft.begin(identifier);
   tft.fillScreen(BLACK);
 
-  
-  countOfMessage = 0;
   Serial.begin(9600);
  
   SPI.begin();
@@ -65,9 +62,7 @@ void setup() {
   radio.begin();  // Defaults 1Mbps, channel 0, max TX power
   dump_radio_status_to_serialport(radio.radioState());
  
-  radio.setRXaddress((void*)rxaddr);
-   
-  radio.enableRX();  // Start listening
+  radio.setTXaddress((void*)rxaddr);
 }
 
 unsigned long draw() {
@@ -75,18 +70,24 @@ unsigned long draw() {
   tft.setRotation(3);
   tft.setCursor(10, 10);
   tft.setTextColor(WHITE);  tft.setTextSize(2);
-  tft.print("Kontrola cidel:");
+  tft.print("Ovladani svetel:");
 
   tft.setCursor(10, 30);
   tft.setTextColor(YELLOW, BLACK);  tft.setTextSize(1);
-  tft.print(nrfMessage);
+  tft.print(relaySetSwitchCommand+stateOfRelay);
 
   tft.setCursor(10, 50);
   tft.setTextColor(WHITE);  tft.setTextSize(1);
-  tft.print("Pocet: ");
+  tft.print("Modul: ");
   tft.setTextColor(BLUE, BLACK);
-  tft.print(countOfMessage);
-
+  if(modulState == true) {
+    tft.print("nalezen");  
+    Serial.println("nalezen");
+  } else {
+    tft.print("nenalezen");
+    Serial.println("NEnalezen");
+  }
+  
   tft.setCursor(10, 70);
   tft.setTextColor(WHITE);  tft.setTextSize(1);
   tft.print("Mod modulu: ");
@@ -95,19 +96,27 @@ unsigned long draw() {
 }
  
 void loop() {
-  delay(200);
   draw();
-  char inbuf[33];
-   
-  dump_radio_status_to_serialport(radio.radioState());  // Should show Receive Mode
-
- Serial.println(state);
-  while (!radio.available(true));
-  if (radio.read(inbuf)) {
-    nrfMessage = inbuf;
-    Serial.println(nrfMessage);
-    ++countOfMessage;
+  Serial.print("Sending packet: ");
+  Serial.println(relaySetSwitchCommand+stateOfRelay);
+  radio.lastTXfailed = false;
+  radio.print(relaySetSwitchCommand+stateOfRelay);
+  radio.flush();  // Force transmit (don't wait for any more data)
+  dump_radio_status_to_serialport(radio.radioState());  // Should report IDLE
+  if(radio.lastTXfailed) {
+    modulState = false;
+  } else {
+    modulState = true;
   }
+
+  if(stateOfRelay == 1){
+    stateOfRelay = 0;  
+  } else {
+    stateOfRelay = 1;
+  }
+  
+  delay(1000);
+
 }
  
 void dump_radio_status_to_serialport(uint8_t status)

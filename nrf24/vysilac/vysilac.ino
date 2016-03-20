@@ -8,9 +8,9 @@ int LED = 2;
  
 Enrf24 radio(9, 10, 6);  // P2.0=CE, P2.1=SCN, P2.2=IRQ
 //const uint8_t txaddr[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0x01 };
-char txaddr[] = {'g','w','-','0','1'};
+char txaddr[] = {'p','a','n','i','o','t'};
  
-const char *message = "kuchyn:1:7,8V:22%";
+const char *message = "relay:relay:set:1";
 const char *str_off = "OFF";
  
 void dump_radio_status_to_serialport(uint8_t);
