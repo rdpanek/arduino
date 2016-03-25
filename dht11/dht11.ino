@@ -1,5 +1,5 @@
 #include "DHT.h"
-#define DHTPIN 2
+#define DHTPIN 12
 #define DHTTYPE DHT11
 
 DHT dht(DHTPIN, DHTTYPE);
@@ -22,4 +22,5 @@ void loop() {
     return;
   }
   Serial.println(temperature);
+  Serial.println(humidity);
 }

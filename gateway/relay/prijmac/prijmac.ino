@@ -8,6 +8,8 @@
 int RELAY = 2;
 int SPEAKER = 3;
 int BUTTON = 4;
+int COMMAND_LED = 5;
+int NRF_STATUS_LED = 8;
 
 // pro mini
 Enrf24 radio(9, 10, 6);  // P2.0=CE, P2.1=SCN, P2.2=IRQ
@@ -18,6 +20,9 @@ String stateOfNRF24;
 String relaySwitch;
 boolean stateOfRelay = false;
 boolean stateOfSpeaker = true;
+boolean receiveMode = false;
+
+boolean reiveMode = false;
 long delayOff = 10000; 
 long relayJob = 0;
 
@@ -38,6 +43,10 @@ void setup() {
   radio.enableRX();
   pinMode(RELAY, OUTPUT);
   digitalWrite(RELAY, LOW);
+  pinMode(COMMAND_LED, OUTPUT);
+  digitalWrite(COMMAND_LED, LOW);
+  pinMode(NRF_STATUS_LED, OUTPUT);
+  digitalWrite(NRF_STATUS_LED, LOW);
   pinMode(SPEAKER, OUTPUT);
   digitalWrite(SPEAKER, LOW);
   pinMode(BUTTON, INPUT);
@@ -45,7 +54,6 @@ void setup() {
 }
  
 void loop() {
-
   // po uplynuti nastavene doby sepnuti, vypnout rele
   if (millis() > (relayJob + delayOff)) {
     stateOfRelay = false; 
@@ -61,6 +69,8 @@ void loop() {
     if (radio.read(inbuf)) {
       nrfMessage = inbuf;
       Serial.println(nrfMessage);
+      incomingCommand();
+      
 
       // Struktura pro delay / relay:delay:set:10000
       if(getValue(nrfMessage,':',1) == "delay") {
@@ -123,9 +133,27 @@ void relaySet() {
     relayJob = 0;
   }
 }
+
+
+void incomingCommand() {
+  digitalWrite(COMMAND_LED, HIGH);
+  //beep();
+  delay(10);
+  digitalWrite(COMMAND_LED, LOW);
+}
+
+
+void nrfStatusLed(boolean receiveMode = false) {
+  if(receiveMode == true) {
+    digitalWrite(NRF_STATUS_LED,HIGH);
+  } else {
+    digitalWrite(NRF_STATUS_LED,LOW);
+  }
+}
  
 void dump_radio_status_to_serialport(uint8_t status)
 {
+  nrfStatusLed(false);
   switch (status) {
     case ENRF24_STATE_NOTPRESENT:
       stateOfNRF24 ="NO TRANSCEIVER PRESENT";
@@ -144,6 +172,7 @@ void dump_radio_status_to_serialport(uint8_t status)
       break;
  
     case ENRF24_STATE_PRX:
+      nrfStatusLed(true);
       stateOfNRF24 = "Receive Mode";
       break;
  

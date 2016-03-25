@@ -2,24 +2,20 @@
 #include <nRF24L01.h>
 #include <string.h>
 #include <SPI.h>
-int LED = 3;
+int LED = 7;
+int PIR_LED = 8;
 
-#include "DHT.h"
-#define DHTPIN 2
-#define DHTTYPE DHT11
-DHT dht(DHTPIN, DHTTYPE);
- 
+// pro mini interrupt pin
+int PIR = 2;
+
 Enrf24 radio(9, 10, 6);  // P2.0=CE, P2.1=SCN, P2.2=IRQ
 
 char addr[] = {'p','a','n','i','o','t','r'};
-const char *str_off = "OFF";
  
 void dump_radio_status_to_serialport(uint8_t);
  
 void setup() {
   Serial.begin(9600);
-
-  dht.begin();
  
   SPI.begin();
   SPI.setDataMode(SPI_MODE0);
@@ -31,31 +27,38 @@ void setup() {
   radio.setTXaddress((void*)addr);
   pinMode(LED, OUTPUT);
   digitalWrite(LED, LOW);
+  pinMode(PIR_LED, OUTPUT);
+  digitalWrite(PIR_LED, LOW);
+
+  //delay(2000);
+  attachInterrupt(digitalPinToInterrupt(PIR),sendToGW, CHANGE);
 }
- 
-void loop() {
 
-  float humidity = dht.readHumidity();
-  float temperature = dht.readTemperature();
-  if (isnan(humidity) || isnan(temperature)) {
-    return;
-  }
+void loop() {}
 
-  String message = "temp:g:teplomer:" + String(temperature) + ":" + String(humidity) +":5.4";
-  
-  Serial.print("Sending packet: ");
-  Serial.println(message);
+void sendToGW() {  
   radio.lastTXfailed = false;
+  int stateOfPir = 0;
+  if(digitalRead(PIR) == HIGH){
+    stateOfPir = 1;
+    digitalWrite(PIR_LED, HIGH);
+    delay(50);
+    digitalWrite(PIR_LED, LOW);
+  } else {
+    stateOfPir = 0;
+  }
+  String message = "pir:g:chodba:";
+  message = message + stateOfPir;
+  Serial.println(message);
   radio.print(message);
   radio.flush();  // Force transmit (don't wait for any more data)
   dump_radio_status_to_serialport(radio.radioState());  // Should report IDLE
   if(radio.lastTXfailed) {
     digitalWrite(LED, HIGH);
     Serial.println("-- modul nenalezen --");
-    delay(200);
+    delay(50);
     digitalWrite(LED, LOW);
   }
-  delay(30000);
 }
  
 void dump_radio_status_to_serialport(uint8_t status)
