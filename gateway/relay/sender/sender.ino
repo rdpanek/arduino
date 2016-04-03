@@ -46,7 +46,8 @@ char inbuf[100];
 String nrfMessage;
 String temperature = "00.00";
 String humidity = "00.00";
-String voltage = "00.00";
+String voltageTemperature = "00.00";
+String voltageOfPir = "0.00";
 int stateOfNrf24 = 0;
 int stateOfRelay = 0;
 int stateOfPir = 0;
@@ -97,11 +98,11 @@ unsigned long draw() {
     tft.setTextColor(WHITE,BLACK);
     tft.setTextSize(1);
     tft.setCursor(6, 30);
-    tft.print(temperature + " C");
+    tft.print("C: " + temperature);
     tft.setCursor(6, 40);
-    tft.print(humidity + " %");
+    tft.print("%: " + humidity);
     tft.setCursor(6, 50);
-    tft.print(voltage + " V");
+    tft.print("V: " + voltageTemperature);
     tft.setCursor(6, 70);
     tft.print("-- templomer --");
 
@@ -117,6 +118,8 @@ unsigned long draw() {
       tft.drawRect(108, 50, 30, 30, LIGHTGREY);
       tft.fillRect(108, 50, 30, 30, LIGHTGREY);
     }
+    tft.setCursor(108, 90);
+    tft.print("V: " + voltageOfPir);
 
     // stateOfRelay
     tft.setTextColor(WHITE,BLACK);
@@ -162,6 +165,7 @@ void loop() {
       // pir:g:chodba:1
       if(getValue(nrfMessage,':',0) == "pir" && getValue(nrfMessage,':',1) == "g") {
         stateOfPir = getValue(nrfMessage,':',3).toInt();
+        voltageOfPir = getValue(nrfMessage,':',4);
         if (stateOfPir == 0) {
           stateOfRelay = 0;
         }
@@ -171,7 +175,7 @@ void loop() {
       if(getValue(nrfMessage,':',0) == "temp" && getValue(nrfMessage,':',1) == "g") {
         temperature = getValue(nrfMessage,':',3);
         humidity = getValue(nrfMessage,':',4);
-        voltage = getValue(nrfMessage,':',5);
+        voltageTemperature = getValue(nrfMessage,':',5);
       }
     }
   }
