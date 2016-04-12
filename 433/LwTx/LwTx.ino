@@ -3,7 +3,7 @@
  
 void setup() {
   // nastaví datový vývod přijmače na pin 2
-  lwrx_setup(2);
+  lwrx_setup(11);
   // zapne seriovou komunikaci
   Serial.begin(9600);
   }
