@@ -7,8 +7,8 @@
 
 #include <WS2812.h>
 
-WS2812 LED(8); // 1 LED
-  
+WS2812 LED(1); // 1 LED
+        
 cRGB value;
 
 void setup() {
@@ -16,24 +16,13 @@ void setup() {
 }
 
 void loop() {
-
-  value.b = 21; value.g = 255; value.r = 4;
-  LED.set_crgb_at(7, value);
-  LED.sync();
-  delay(30);
-
-
-  value.b = 0; value.g = 0; value.r = 0;
-  LED.set_crgb_at(0, value);
-  LED.set_crgb_at(1, value);
-  LED.set_crgb_at(2, value);
-  LED.set_crgb_at(3, value);
-  LED.set_crgb_at(4, value);
-  LED.set_crgb_at(5, value);
-  LED.set_crgb_at(6, value);
-  LED.set_crgb_at(7, value);
-  LED.sync();
-  delay(5000);
-
+  value.b = 0; value.g = 0; value.r = 0; // RGB Value -> Blue
+  LED.set_crgb_at(0, value); // Set value at LED found at index 0
+  LED.sync(); // Sends the value to the LED
+  delay(100); // Wait 500 ms
+  value.b = 0; value.g = 0; value.r = 255; // RGB Value -> Red
+  LED.set_crgb_at(0, value); // Set value at LED found at index 0
+  LED.sync(); // Sends the value to the LED
+  delay(10); // Wait 500 ms
 }
 

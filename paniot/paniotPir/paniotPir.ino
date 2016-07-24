@@ -2,8 +2,8 @@
 #include <nRF24L01.h>
 #include <string.h>
 #include <SPI.h>
-int LED = 7;
-int PIR_LED = 8;
+int LED = 8;
+int PIR_LED = 7;
 
 // pro mini interrupt pin
 int PIR = 2;
@@ -16,7 +16,7 @@ void dump_radio_status_to_serialport(uint8_t);
  
 void setup() {
   Serial.begin(9600);
- 
+
   SPI.begin();
   SPI.setDataMode(SPI_MODE0);
   SPI.setBitOrder(1); // MSB-first
@@ -32,6 +32,17 @@ void setup() {
 
   //delay(2000);
   //attachInterrupt(digitalPinToInterrupt(PIR),sendToGW, CHANGE);
+  digitalWrite(PIR_LED, HIGH);
+  delay(50);
+  digitalWrite(PIR_LED, LOW);
+  delay(50);
+  digitalWrite(PIR_LED, HIGH);
+  delay(50);
+  digitalWrite(PIR_LED, LOW);
+  delay(50);
+  digitalWrite(PIR_LED, HIGH);
+  delay(50);
+  digitalWrite(PIR_LED, LOW);
 }
 
 void loop() {
@@ -64,7 +75,7 @@ void sendToGW() {
     digitalWrite(LED, LOW);
   }
 }
- 
+
 void dump_radio_status_to_serialport(uint8_t status)
 {
   Serial.print("Enrf24 radio transceiver status: ");

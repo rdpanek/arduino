@@ -1,10 +1,9 @@
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(7, 8);
-int LED = 13;
+SoftwareSerial mySerial(3, 2);
+
 
 void setup()
 {
-pinMode(LED, OUTPUT);
 Serial.begin(19200);
 mySerial.begin(19200);  // the GPRS baud rate
 }
@@ -17,9 +16,7 @@ void loop()
     switch (com)
     {
       case '1':
-      digitalWrite(LED, HIGH);
-      delay(3000);
-      digitalWrite(LED, LOW);
+      mySerial.println("AT+CSQ");
       break;
 
       case '2':
@@ -60,12 +57,6 @@ void loop()
       delay(100);
       break;
 
-      /*
-      case '9':
-      mySerial.println("AT+CPIN?\r");  //sim card is found
-      delay(100);
-      break;
-      */
       case '9':
       mySerial.write("AT+CMGF=1\r");           //set GSM to text mode
       delay(1500);
@@ -82,4 +73,5 @@ void loop()
   {
      Serial.write(mySerial.read());
   }
+
 }
