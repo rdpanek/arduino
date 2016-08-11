@@ -1,128 +1,50 @@
-/*
- *  This sketch demonstrates how to set up a simple HTTP-like server.
- *  The server will set a GPIO pin depending on the request
- *    http://server_ip/gpio/0 will set the GPIO2 low,
- *    http://server_ip/gpio/1 will set the GPIO2 high
- *  server_ip is the IP address of the ESP8266 module, will be 
- *  printed to Serial when the module is connected.
- */
-
-#include <ESP8266WiFi.h>
+#include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
+#include <DNSServer.h>
+#include <ESP8266WebServer.h>     //Local WebServer used to serve the configuration portal
+#include <WiFiManager.h>         //https://github.com/tzapu/WiFiManager
 #include <RCSwitch.h>
 
-RCSwitch mySwitch = RCSwitch();
+int LED = 4;
 
-const char* ssid = "panek6";
-const char* password = "panekSit";
+void blick(int count, int _delay)
+{
+  for (int _count = 0; _count <= count; _count++) {
+    digitalWrite(LED, HIGH);
+    delay(_delay);
+    digitalWrite(LED, LOW);
+  }
+}
 
-// Create an instance of the server
-// specify the port to listen on as an argument
-WiFiServer server(80);
+void configModeCallback (WiFiManager *myWiFiManager) {
+  Serial.println("Entered config mode");
+  Serial.println(WiFi.softAPIP());
+  // print the ssid that we should connect to to configure the ESP8266
+  Serial.print("Created config portal AP ");
+  Serial.println(myWiFiManager->getConfigPortalSSID());
+
+  blick(6,50);
+}
 
 void setup() {
-  Serial.begin(115200);
-  delay(10);
-  mySwitch.enableTransmit(5);
+    Serial.begin(115200);
+    pinMode(LED, OUTPUT);
 
-  // prepare GPIO2
-  pinMode(4, OUTPUT);
-  digitalWrite(4, 0);
-  
-  // Connect to WiFi network
-  Serial.println();
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-  
-  WiFi.begin(ssid, password);
-  
-  while (WiFi.status() != WL_CONNECTED) {
-    digitalWrite(4, HIGH);
-    delay(500);
-    Serial.print(".");
-    digitalWrite(4, LOW);
-  }
-  Serial.println("");
-  Serial.println("WiFi connected");
-  
-  // Start the server
-  server.begin();
-  Serial.println("Server started");
+    WiFiManager wifiManager;
+    wifiManager.resetSettings();
+    wifiManager.setAPCallback(configModeCallback);
+    wifiManager.setCustomHeadElement("<style>html{filter: invert(100%); -webkit-filter: invert(100%);}</style>");
+    wifiManager.setConfigPortalTimeout(60);
+    if(!wifiManager.autoConnect("WifiSwitch")) {
+      Serial.println("failed to connect and hit timeout");
+      ESP.reset();
+      delay(1000);
+    } 
 
-  // Print the IP address
-  Serial.println(WiFi.localIP());
+
+    Serial.println("Connection succesfull");
+    blick(2,100);
+
 }
 
 void loop() {
-  // Check if a client has connected
-  WiFiClient client = server.available();
-  if (!client) {
-    return;
-  }
-  
-  // Wait until the client sends some data
-  Serial.println("new client");
-  while(!client.available()){
-    delay(1);
-  }
-  
-  // Read the first line of the request
-  String req = client.readStringUntil('\r');
-  Serial.println(req);
-  client.flush();
-  
-  // Match the request
-  int val;
-  if (req.indexOf("/gpio/0") != -1) {
-    val = 0;
-    mySwitch.send(11548892, 24);
-    delay(1000);
-  } else if (req.indexOf("/gpio/1") != -1) {
-    val = 1;
-    mySwitch.send(11548893, 24);
-    delay(1000);
-  } else {
-    Serial.println("invalid request");
-    client.stop();
-    return;
-  }
-
-  // Set GPIO2 according to the request
-  digitalWrite(4, val);
-  
-  client.flush();
-
-  // Prepare the response
-  String s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n<html>";
-  //s += (val)?"high":"low";
-  s += "<head><title>Wifi switcher</title><link href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u\" crossorigin=\"anonymous\">";
-  s += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
-  s += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no\">";
-  s += "</head>";
-  s += "<body>";
-  s += "<div class=\"jumbotron\">";
-  s += "<h2>Wifi switcher</h2>";
-  s += "<div class=\"panel panel-default\"><div class=\"panel-heading\"> Napajeni ";
-  if (val == HIGH) {
-    s += "<span class=\"label label-success\">Zapnuto</span>";  
-  } else {
-    s += "<span class=\"label label-danger\">Vypnuto</span>";
-  }
-  s += "</div><div class=\"panel-body\">";
-  s += "<p><a href=\"/gpio/1\"><button type=\"button\" class=\"btn btn-success btn-lg btn-block\"";
-  if (val == HIGH) { s += "disabled=\"disabled\""; } 
-  s += ">Zapnout</button></a> <br/> <a href=\"/gpio/0\"><button type=\"button\" class=\"btn btn-danger btn-lg btn-block\"";
-  if (val != HIGH) { s += "disabled=\"disabled\""; } 
-  s += ">Vypnout</button></a></p>";
-  s += "</div></div></div>";
-  s += "</body></html>\n";
-
-  // Send the response to the client
-  client.print(s);
-  delay(1);
-  Serial.println("Client disonnected");
-
-  // The client will actually be disconnected 
-  // when the function returns and 'client' object is detroyed
 }
-
