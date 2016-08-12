@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Wifi switcher</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+</head>
+<body>
+  <div class="jumbotron">
+    <h2>Wifi switcher</h2>
+    <div class="panel panel-default">
+      <div class="panel-heading"> Napajeni     <span class="label label-success">Zapnuto</span>
+        <!--<span class="label label-danger">Vypnuto</span>-->
+      </div>
+      <div class="panel-body">
+        <p>
+          <a href="/gpio/1">
+            <button type="button" class="btn btn-success btn-lg btn-block">Zapnout</button>
+          </a>
+          <br/>
+          <a href="/gpio/0">
+            <button type="button" class="btn btn-danger btn-lg btn-block">Vypnout</button>
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
