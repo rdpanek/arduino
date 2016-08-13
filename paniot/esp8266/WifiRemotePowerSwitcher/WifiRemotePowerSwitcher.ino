@@ -5,33 +5,95 @@
 #include <RCSwitch.h>
 #include <FS.h>
 #define DBG_OUTPUT_PORT Serial
+#include <WebSocketsServer.h>
+#include <RCSwitch.h>
+
 
 int LED = 4;
 
 ESP8266WebServer server(80);
+WebSocketsServer webSocket = WebSocketsServer(81);
+RCSwitch mySwitch = RCSwitch();
 
-void handleRoot() {
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght) {
+  String text = String((char *) &payload[0]);
+  char * textC = (char *) &payload[0];
+  String rssi;
+
+  switch(type) {
+      case WStype_DISCONNECTED:
+          DBG_OUTPUT_PORT.println("Disconnected! " + num);
+          break;
+      case WStype_CONNECTED:
+          {
+              IPAddress ip = webSocket.remoteIP(num);
+              DBG_OUTPUT_PORT.println("Connected from: " + num + ip[0] + ip[1] + ip[2] + ip[3]);
+              delay(5);
+              webSocket.sendTXT(num, "C");
+          }
+          break;
+      case WStype_TEXT:
+          switch(payload[0]){
+            case 'w': case 'W':  // Request RSSI wx
+              rssi = String(WiFi.RSSI());
+              delay(5);
+              webSocket.sendTXT(0,rssi);
+              break;
+            case 'p': // ping, will reply pong
+              DBG_OUTPUT_PORT.println("Got message: " + num);
+              delay(5);
+              webSocket.sendTXT(0,"pong");
+              break;
+            case 'e': case 'E':   //Echo
+              delay(5);
+              webSocket.sendTXT(0,text);
+              break;
+            case 'B':   // Tlacitko
+              delay(5);
+              if ( text == "BA1" ) toogleButton(11548893); // Prvni tlacitko zap
+              if ( text == "BA2" ) toogleButton(11548892); // Prvni tlacitko zap
+              if ( text == "BB1" ) toogleButton(11548895); // Druhe tlacitko zap
+              if ( text == "BB2" ) toogleButton(11548894); // Druhe tlacitko zap
+              delay(500);
+              webSocket.sendTXT(0,text);
+              break;
+            default:
+              delay(5);
+              webSocket.sendTXT(0,"**** UNDEFINED ****");
+              DBG_OUTPUT_PORT.println("Got UNDEFINED message: " + num);
+              break;
+          }
+          break;
+      
+      case WStype_BIN:
+          DBG_OUTPUT_PORT.println("get binary lenght:" + num + lenght);
+          hexdump(payload, lenght);
+          break;
+}
+}
+
+void toogleButton(int code) {
   digitalWrite(LED, 1);
-  server.send(200, "text/plain", "hello from esp8266!");
+  mySwitch.send(code, 24);
   digitalWrite(LED, 0);
 }
 
 void blick(int count, int _delay)
 {
-  for (int _count = 0; _count <= count; _count++) {
+  for (int _count = 0; _count < count; _count++) {
     digitalWrite(LED, HIGH);
     delay(_delay);
     digitalWrite(LED, LOW);
+    delay(_delay);
   }
 }
 
 void configModeCallback (WiFiManager *myWiFiManager) {
+  blick(3,100);
   DBG_OUTPUT_PORT.println("Entered config mode");
   DBG_OUTPUT_PORT.println(WiFi.softAPIP());
   DBG_OUTPUT_PORT.print("Created config portal AP ");
   DBG_OUTPUT_PORT.println(myWiFiManager->getConfigPortalSSID());
-
-  blick(6,50);
 }
 
 //format bytes
@@ -80,6 +142,8 @@ void setup() {
     DBG_OUTPUT_PORT.begin(115200);
     DBG_OUTPUT_PORT.print("\n");
     DBG_OUTPUT_PORT.setDebugOutput(true);
+
+    mySwitch.enableTransmit(5);
     
     pinMode(LED, OUTPUT);
 
@@ -95,7 +159,6 @@ void setup() {
     }
 
     WiFiManager wifiManager;
-    wifiManager.resetSettings();
     wifiManager.setAPCallback(configModeCallback);
     wifiManager.setCustomHeadElement("<style>html{filter: invert(100%); -webkit-filter: invert(100%);}</style>");
     wifiManager.setConfigPortalTimeout(60);
@@ -107,7 +170,7 @@ void setup() {
 
 
     DBG_OUTPUT_PORT.println("Connection succesfull");
-    blick(2,100);
+    blick(1,100);
 
     // Wait for connection
     while (WiFi.status() != WL_CONNECTED) {
@@ -117,16 +180,32 @@ void setup() {
     DBG_OUTPUT_PORT.println("");
     DBG_OUTPUT_PORT.print("IP address: ");
     DBG_OUTPUT_PORT.println(WiFi.localIP());
+    DBG_OUTPUT_PORT.print("MAC address: ");
+    DBG_OUTPUT_PORT.println(WiFi.macAddress());
 
     server.onNotFound([](){
       if(!handleFileRead(server.uri()))
         server.send(404, "text/plain", "FileNotFound");
     });
+    server.on ( "/restart", []() {
+      server.send ( 200, "text/plain", "Zarizeni bude restartovano." );
+      ESP.reset();
+      delay(1000);
+    } );
+    server.on ( "/factoryrestart", []() {
+      server.send ( 200, "text/plain", "Bude nastaveno tovarni nastaveni. Vyhledejte wifi pojmenovanou WifiSwitch" );
+      WiFi.disconnect(true);
+      delay(1000);
+      ESP.reset();
+      delay(1000);
+    } );
     server.begin();
 
-
+    webSocket.begin();
+    webSocket.onEvent(webSocketEvent);
 }
 
 void loop() {
-  server.handleClient();
+    server.handleClient();
+  webSocket.loop();
 }
