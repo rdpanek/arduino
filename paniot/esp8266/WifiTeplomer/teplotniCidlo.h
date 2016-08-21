@@ -1,12 +1,12 @@
 #include <OneWire.h>
 
-OneWire  ds(5);
+OneWire  ds(2);
 String dsoChip;
 float celsius;
 
 float getTeplota() {
 
-    byte i;
+  byte i;
   byte present = 0;
   byte type_s;
   byte data[12];
