@@ -1,137 +1,207 @@
-#include <ESP8266WiFiMulti.h>
+#include <FS.h>
+#include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
-#include <OneWire.h>
+#include <DNSServer.h>
+#include <ESP8266WebServer.h>
+#include <WiFiManager.h>
+#include <WebSocketsServer.h>
 #include <string.h>
+#include "httpDate.h"
+#include "teplotniCidlo.h"
 
-float celsius;
 ADC_MODE(ADC_VCC);
-OneWire  ds(2);  // on pin 2 (a 4.7K resistor is necessary)
-ESP8266WiFiMulti WiFiMulti;
-
-String jsonData;
-String dsoChip;
-
 int LED = 4;
+int delayBetweenMeasurement = 10000;
 
-String getTime() {
-  WiFiClient client;
-  while (!!!client.connect("google.com", 80)) {
-    Serial.println("connection failed, retrying...");
-  }
+ESP8266WebServer server(80);
+WebSocketsServer webSocket = WebSocketsServer(81);
 
-  client.print("HEAD / HTTP/1.1\r\n\r\n");
-  while(!!!client.available()) {
-     yield();
-  }
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght) {
+  String text = String((char *) &payload[0]);
+  char * textC = (char *) &payload[0];
+  String rssi;
 
-  while(client.available()){
-    if (client.read() == '\n') {    
-      if (client.read() == 'D') {    
-        if (client.read() == 'a') {    
-          if (client.read() == 't') {    
-            if (client.read() == 'e') {    
-              if (client.read() == ':') {    
-                client.read();
-                String theDate = client.readStringUntil('\r');
-                client.stop();
-                return theDate;
-              }
-            }
+  switch(type) {
+      case WStype_DISCONNECTED:
+          Serial.println("Disconnected! " + num);
+          break;
+      case WStype_CONNECTED:
+          {
+              IPAddress ip = webSocket.remoteIP(num);
+              Serial.println("Connected from: " + num + ip[0] + ip[1] + ip[2] + ip[3]);
+              delay(5);
+              webSocket.sendTXT(num, "C");
           }
-        }
+          break;
+      case WStype_TEXT:
+          switch(payload[0]){
+            case 'w': case 'W':
+              rssi = String(WiFi.RSSI());
+              delay(5);
+              webSocket.sendTXT(0,rssi);
+              break;
+            case 'p':
+              Serial.println("Got message: " + num);
+              delay(5);
+              webSocket.sendTXT(0,"pong");
+              break;
+            case 'e': case 'E':
+              delay(5);
+              webSocket.sendTXT(0,text);
+              break;
+            default:
+              delay(5);
+              webSocket.sendTXT(0,"**** UNDEFINED ****");
+              Serial.println("Got UNDEFINED message: " + num);
+              break;
+          }
+          break;
+      
+      case WStype_BIN:
+          Serial.println("get binary lenght:" + num + lenght);
+          hexdump(payload, lenght);
+          break;
       }
-    }
+}
+
+void blick(int count, int _delay)
+{
+  for (int _count = 0; _count < count; _count++) {
+    digitalWrite(LED, HIGH);
+    delay(_delay);
+    digitalWrite(LED, LOW);
+    delay(_delay);
   }
 }
 
+void configModeCallback (WiFiManager *myWiFiManager) {
+  blick(3,100);
+  Serial.println("Entered config mode");
+  Serial.println(WiFi.softAPIP());
+  Serial.print("Created config portal AP ");
+  Serial.println(myWiFiManager->getConfigPortalSSID());
+}
 
+String formatBytes(size_t bytes){
+  if (bytes < 1024){
+    return String(bytes)+"B";
+  } else if(bytes < (1024 * 1024)){
+    return String(bytes/1024.0)+"KB";
+  } else if(bytes < (1024 * 1024 * 1024)){
+    return String(bytes/1024.0/1024.0)+"MB";
+  } else {
+    return String(bytes/1024.0/1024.0/1024.0)+"GB";
+  }
+}
+
+String getContentType(String filename){
+  if(server.hasArg("download")) return "application/octet-stream";
+  else if(filename.endsWith(".htm")) return "text/html";
+  else if(filename.endsWith(".html")) return "text/html";
+  else if(filename.endsWith(".css")) return "text/css";
+  else if(filename.endsWith(".js")) return "application/javascript";
+  else if(filename.endsWith(".png")) return "image/png";
+  else if(filename.endsWith(".xml")) return "text/xml";
+  else if(filename.endsWith(".zip")) return "application/x-zip";
+  else if(filename.endsWith(".gz")) return "application/x-gzip";
+  return "text/plain";
+}
+
+bool handleFileRead(String path){
+  Serial.println("handleFileRead: " + path);
+  if(path.endsWith("/")) path += "index.htm";
+  String contentType = getContentType(path);
+  String pathWithGz = path + ".gz";
+  if(SPIFFS.exists(pathWithGz) || SPIFFS.exists(path)){
+    if(SPIFFS.exists(pathWithGz))
+      path += ".gz";
+    File file = SPIFFS.open(path, "r");
+    size_t sent = server.streamFile(file, contentType);
+    file.close();
+    return true;
+  }
+  return false;
+}
 
 void setup() {
   Serial.begin(115200);
   pinMode(LED, OUTPUT);
-  WiFiMulti.addAP("panek2", "panekSit");
-}
 
-// the loop function runs over and over again forever
-void loop() {
-  digitalWrite(LED, LOW);   // Turn the LED on (Note that LOW is the voltage level
-                                    // but actually the LED is on; this is because 
-                                    // it is acive low on the ESP-01)
-
-  byte i;
-  byte present = 0;
-  byte type_s;
-  byte data[12];
-  byte addr[8];
-
-  if ( !ds.search(addr)) {
-    ds.reset_search();
-    delay(250);
+  Serial.println("Inicializuji SPIFFS");
+  if (!SPIFFS.begin())
+  {
+    Serial.println("Failed to mount file system");
     return;
   }
-
-  // the first ROM byte indicates which chip
-  switch (addr[0]) {
-    case 0x10:
-      dsoChip = "DS18S20";
-      type_s = 1;
-      break;
-    case 0x28:
-      dsoChip = "DS18B20";
-      type_s = 0;
-      break;
-    case 0x22:
-      dsoChip = "DS1822";
-      type_s = 0;
-      break;
-    default:
-      dsoChip = "Device is not a DS18x20 family device.";
-      return;
+  
+  Serial.println("SPIFFS inicializovan");
+  Dir dir = SPIFFS.openDir("/");
+  while (dir.next()) {    
+    String fileName = dir.fileName();
+    size_t fileSize = dir.fileSize();
+    Serial.printf("FS File: %s, size: %s\n", fileName.c_str(), formatBytes(fileSize).c_str());
+  }
+  Serial.printf("\n");
+  
+  
+  WiFiManager wifiManager;
+  wifiManager.setAPCallback(configModeCallback);
+  wifiManager.setCustomHeadElement("<style>html{filter: invert(100%); -webkit-filter: invert(100%);}</style>");
+  wifiManager.setConfigPortalTimeout(60);
+  if(!wifiManager.autoConnect("WifiTeplomer")) {
+    Serial.println("failed to connect and hit timeout");
+    ESP.reset();
+    delay(1000);
   } 
 
-  ds.reset();
-  ds.select(addr);
-  ds.write(0x44);        // start conversion, use ds.write(0x44,1) with parasite power on at the end
+  Serial.println("Connection succesfull");
+  blick(3,100);
 
-  delay(1000);     // maybe 750ms is enough, maybe not
-  // we might do a ds.depower() here, but the reset will take care of it.
-
-  present = ds.reset();
-  ds.select(addr);    
-  ds.write(0xBE);         // Read Scratchpad
-
-  for ( i = 0; i < 9; i++) {           // we need 9 bytes
-    data[i] = ds.read();
+  // Wait for connection
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
   }
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+  Serial.print("MAC address: ");
+  Serial.println(WiFi.macAddress());
 
-  // Convert the data to actual temperature
-  // because the result is a 16 bit signed integer, it should
-  // be stored to an "int16_t" type, which is always 16 bits
-  // even when compiled on a 32 bit processor.
-  int16_t raw = (data[1] << 8) | data[0];
-  if (type_s) {
-    raw = raw << 3; // 9 bit resolution default
-    if (data[7] == 0x10) {
-      // "count remain" gives full 12 bit resolution
-      raw = (raw & 0xFFF0) + 12 - data[6];
-    }
-  } else {
-    byte cfg = (data[4] & 0x60);
-    // at lower res, the low bits are undefined, so let's zero them
-    if (cfg == 0x00) raw = raw & ~7;  // 9 bit resolution, 93.75 ms
-    else if (cfg == 0x20) raw = raw & ~3; // 10 bit res, 187.5 ms
-    else if (cfg == 0x40) raw = raw & ~1; // 11 bit res, 375 ms
-    //// default is 12 bit resolution, 750 ms conversion time
-  }
-  celsius = (float)raw / 16.0;
+  server.onNotFound([](){
+    if(!handleFileRead(server.uri()))
+      server.send(404, "text/plain", "FileNotFound");
+  });
+  server.on ( "/restart", []() {
+    server.send ( 200, "text/plain", "Zarizeni bude restartovano." );
+    ESP.reset();
+    delay(1000);
+  } );
+  server.on ( "/factoryrestart", []() {
+    server.send ( 200, "text/plain", "Bude nastaveno tovarni nastaveni. Vyhledejte wifi pojmenovanou WifiSwitch" );
+    WiFi.disconnect(true);
+    delay(1000);
+    ESP.reset();
+    delay(1000);
+  } );
+  server.begin();
 
-  jsonData += "{ \"chip\": \""+dsoChip+"\"";
-  jsonData += ",\"umisteni\": \"pracovna\"";
+  webSocket.begin();
+  webSocket.onEvent(webSocketEvent);
+}
+
+void loop() {
+
+  server.handleClient();
+  webSocket.loop();
+
+  String jsonData;
+  jsonData += "{\"umisteni\": \"pracovna\"";
   jsonData += ",\"teplota\": \"";
   char tmp[5]; 
-  dtostrf(celsius, 1, 2, tmp);
+  dtostrf(getTeplota(), 1, 2, tmp);
   jsonData += tmp;
   jsonData += "\"";
+  jsonData += ",\"chip\": \""+getDSOChip()+"\"";
   jsonData += ",\"freeHeap\": "+String(ESP.getFreeHeap());
   jsonData += ",\"resetReason\": \""+ESP.getResetReason()+"\"";
   jsonData += ",\"flashChipSpeed\": "+String(ESP.getFlashChipSpeed());
@@ -140,31 +210,19 @@ void loop() {
   jsonData += ",\"rssi\":\""+String(WiFi.RSSI())+"\"";
   jsonData += "}";
 
-  Serial.println(jsonData);
   // wait for WiFi connection
-  if((WiFiMulti.run() == WL_CONNECTED)) {
+  if(WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
     http.begin("http://146.148.102.113:9200/wifi-teplomer/wifi-teplomer/"); //HTTP
     http.addHeader("Content-Type","application/json; charset=UTF-8");
     int httpCode = http.POST(jsonData);
     if (httpCode < 300) {
-      digitalWrite(LED, HIGH);
-      Serial.println(http.getString());
-      delay(100);
-      digitalWrite(LED, LOW);
+      blick(1,100);
     } else { 
-      digitalWrite(LED, HIGH);
-      delay(100);
-      digitalWrite(LED, LOW);
-      delay(100);
-      digitalWrite(LED, HIGH);
-      delay(100);
-      digitalWrite(LED, LOW);
+      blick(2,100);
     }
     Serial.println(http.getString());
     http.end();
   }
-  jsonData = "";
-  delay(60000);
 }
 
