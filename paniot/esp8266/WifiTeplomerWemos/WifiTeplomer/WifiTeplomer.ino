@@ -15,7 +15,7 @@ extern "C" {
 SSD1306 display(0x3c,D2,D1);
 int16_t displayMarginLeft = 31;
 int16_t displayMarginTop = 13;
-char teplota[] = "00.00";
+String teplota = "00.00";
  
 void setup() {
   display.init();
@@ -28,6 +28,8 @@ void loop() {
   //teplota = String(getTeplota());
   delay(200);
   displayTeplota();
+  float _teplota = getTeplota();
+  if ( _teplota > 0 ) teplota = _teplota;
 }
  
 void displayTeplota() {
@@ -35,7 +37,7 @@ void displayTeplota() {
   display.setFont(Dialog_plain_10);
   display.drawString(displayMarginLeft+12,displayMarginTop+10,"Teplota");
   display.setFont(Dialog_bold_14);
-  display.drawString(displayMarginLeft+10,displayMarginTop+25,String(getTeplota()));
+  display.drawString(displayMarginLeft+10,displayMarginTop+25,String(teplota));
   display.display();
   display.clear();
 }  
