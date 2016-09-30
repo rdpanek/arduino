@@ -25,7 +25,7 @@ void setup() {
 }
  
 void loop() {
-  //teplota = String(getTeplota());
+  teplota = String(getTeplota());
   delay(200);
   displayTeplota();
   float _teplota = getTeplota();
