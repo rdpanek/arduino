@@ -310,13 +310,13 @@ void loop() {
   server.handleClient();
   
   if (displaySetup == 1) {
-    displayMessage("Teplota", teplota, 0);
+    displayMessage("Teplota", teplota, 100);
   } else if (displaySetup == 2) {
-    displayMessage("LDR", String(ldr), 0);
+    displayMessage("LDR", String(ldr), 100);
   } else if (displaySetup == 3) {
-    displayMessage("RSSI", String(rssi), 0);
+    displayMessage("RSSI", String(rssi), 100);
   } else if (displaySetup == 4) {
-    displayMessage("HEAP", String(ESP.getFreeHeap()), 0);
+    displayMessage("HEAP", String(ESP.getFreeHeap()), 100);
   }
 
   if (millis() > (displayRotationJob + delayBetweenDisplayRotation)) { 

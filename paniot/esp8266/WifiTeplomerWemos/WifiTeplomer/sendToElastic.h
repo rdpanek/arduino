@@ -2,15 +2,15 @@
 void send(String jsonData) {
   if(WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
-    http.begin("http://"+elasticsearchUri+"/paniot/paniot/");
+    http.begin("http://"+elasticsearchUri);
     http.addHeader("Content-Type","application/json; charset=UTF-8");
     int httpCode = http.POST(jsonData);
     if (httpCode > 300) { 
-      displayMessage("Elastic", "failed", 300);
+      displayMessage("Elastic", "chyba", 300);
       blick(3,30);
     }
     jsonData = "";
-    //DBG_OUTPUT_PORT.println(http.getString());
+    //DBG_OUTPUT_PORT.println(jsonData);
     http.end();
   }
 }
