@@ -1,6 +1,6 @@
 #include <OneWire.h>
 
-OneWire  ds(D2);
+OneWire  ds(D3);
 float celsius;
 
 float getTeplota() {
@@ -22,7 +22,7 @@ float getTeplota() {
 
   delay(1000);
   present = ds.reset();
-  ds.select(addr);    
+  ds.select(addr);
   ds.write(0xBE);
 
   for ( i = 0; i < 9; i++) {
@@ -44,5 +44,5 @@ float getTeplota() {
     else if (cfg == 0x40) raw = raw & ~1; // 11 bit res, 375 ms
     //// default is 12 bit resolution, 750 ms conversion time
   }
-  celsius = (float)raw / 16.0; 
+  celsius = (float)raw / 16.0;
 }

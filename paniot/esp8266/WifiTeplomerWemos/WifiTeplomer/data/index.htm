@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="Dashboard for ESP device">
+    <meta name="author" content="Radim Daniel Panek">
+
+    <title>Wifi Teplomer</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="css/bootstrap-theme.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/theme.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">Wifi Teplomer v1.0</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container theme-showcase" role="main">
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><strong>Naměřená teplota</strong></h3>
+            </div>
+            <div class="panel-body">
+              <div class="text-center temperature-box">0 °C</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><strong>Naměřená hodnota LDR</strong></h3>
+            </div>
+            <div class="panel-body">
+              <div class="text-center ldr-box">0</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><strong>Nastavení displeje</strong></h3>
+            </div>
+            <div class="panel-body">
+              <form class="form-group" id="displaySettings">
+                <div class="form-group">
+                  <label for="exampleInputName2">Rotovat informace na displeji</label>
+                  <select class="form-control" id="displayRotation">
+                    <option value="1">Ano</option>
+                    <option value="0">Ne</option>
+                  </select>
+                </div>
+                <br/>
+                <div class="form-group">
+                  <label for="exampleInputName2">Na displeji zobrazit</label>
+                  <select class="form-control" id="displaySetup">
+                    <option value="1">Teplota</option>
+                    <option value="2">LDR hodnotu</option>
+                    <option value="3">RSSI hodnotu</option>
+                    <option value="4">HEAP</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <button type="submit" class="btn btn-success">Uložit</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><strong>Nastavení odesilani dat</strong></h3>
+            </div>
+            <div class="panel-body">
+              <form class="form-group" id="settings">
+                <div class="form-group">
+                  <label for="exampleInputName2">Interval měření</label>
+                  <input type="text" class="form-control" id="delayBetweenMeasurement" placeholder="milisekund" value="10000">
+                </div>
+                <br/>
+                <div class="form-group">
+                  <label for="exampleInputName2">Elasticsearch</label>
+                  <input type="text" class="form-control" id="elasticsearchUri" placeholder="http://" value="server:port">
+                </div>
+                <br/>
+                <div class="form-group">
+                  <label for="exampleInputName2">Název / umístění zařízení</label>
+                  <input type="text" class="form-control" id="nazevZarizeni" placeholder="Název zarizeni" value="Na zahrade">
+                </div>
+                <div class="form-group">
+                  <button type="submit" class="btn btn-success">Uložit</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><strong>Restartování</strong></h3>
+            </div>
+            <div class="panel-body">
+              <div class="btn-group" role="group" aria-label="...">
+                <a class="btn btn-default" href="/restart" role="button">Restartovat</a>
+                <a class="btn btn-danger" href="/factoryrestart" role="button">Tovární nastavení</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

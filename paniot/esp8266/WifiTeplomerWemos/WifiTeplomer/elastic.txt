@@ -1,0 +1,41 @@
+{
+    "template": "wifi-teplomer",
+    "mappings": {
+        "wifi-teplomer": {
+            "date_detection": false,
+            "dynamic": "strict",
+            "properties": {
+                "chip": {
+                    "type": "string"
+                },
+                "umisteni": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "freeHeap": {
+                    "type": "integer"
+                },
+                "resetReason": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "flashChipSpeed": {
+                    "type": "long"
+                },
+                "vcc": {
+                    "type": "integer"
+                },
+                "rssi": {
+                    "type": "integer"
+                },
+                "teplota": {
+                    "type": "float"
+                },
+                "dateTime": {
+                  "type":   "date",
+                  "format": "EEE, dd MMM yyyy HH:mm:ss 'GMT'"
+                }
+            }
+        }
+    }
+}

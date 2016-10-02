@@ -1,0 +1,8 @@
+{
+    "delayBetweenMeasurement": 10000,
+    "nazevZarizeni": "Pracovna",
+    "elasticsearchUri": "130.211.164.29:9200",
+    "displaySetup": 1,
+    "displayRotation": 1,
+    "ledIndication": true
+}

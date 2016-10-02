@@ -1,0 +1,30 @@
+body {
+  padding-top: 70px;
+  padding-bottom: 30px;
+}
+
+.theme-dropdown .dropdown-menu {
+  position: static;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.theme-showcase > p > .btn {
+  margin: 5px 0;
+}
+
+.theme-showcase .navbar .container {
+  width: auto;
+}
+
+.temperature-box {
+  margin:.67em 0;
+  font-size:4em;
+  font-weight:700;
+}
+
+.ldr-box {
+  margin:.67em 0;
+  font-size:4em;
+  font-weight:700;
+}
