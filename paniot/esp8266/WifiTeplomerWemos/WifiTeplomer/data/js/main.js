@@ -1,5 +1,5 @@
-//var uri = "http://" + location.hostname + "/";
-var uri = "http://192.168.1.103/";
+var uri = "http://" + location.hostname + "/";
+//var uri = "http://192.168.1.103/";
 
 window.addEventListener("load", function load(event){
     window.removeEventListener("load", load, false);

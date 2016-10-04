@@ -18,7 +18,7 @@ void send(String jsonData) {
 String addESPInfo(String jsonData) {
   jsonData += ",\"freeHeap\": "+String(ESP.getFreeHeap());
   jsonData += ",\"resetReason\": \""+ESP.getResetReason()+"\"";
-  jsonData += ",\"rssi\":\""+String(rssi)+"\"";
+  jsonData += ",\"rssi\":"+rssi;
   jsonData += ",\"ip\":\""+String(localIP)+"\"";
   jsonData += ",\"macAddress\":\""+String(macAddress)+"\"";
   jsonData += "}";
@@ -31,9 +31,8 @@ void sendTemperatureToElasticsearch() {
   }
   jsonData += "{\"nazevZarizeni\": \""+String(nazevZarizeni)+"\"";
   jsonData += ",\"senzor\": \"teplomer\"";
-  jsonData += ",\"hodnota\": \"";
-  jsonData += String(teplota);
-  jsonData += "\"";
+  jsonData += ",\"hodnota\":";
+  jsonData += teplota.toFloat();
   jsonData = addESPInfo(jsonData);
   
   send(jsonData);
@@ -46,9 +45,8 @@ void sendLdrToElasticsearch() {
   }
   jsonData = "{\"nazevZarizeni\": \""+String(nazevZarizeni)+"\"";
   jsonData += ",\"senzor\": \"ldr\"";
-  jsonData += ",\"hodnota\": \"";
-  jsonData += String(ldr);
-  jsonData += "\"";
+  jsonData += ",\"hodnota\": ";
+  jsonData += ldr;
   jsonData = addESPInfo(jsonData);
 
   send(jsonData);

@@ -13,7 +13,7 @@
 #include <FS.h>
 #define DBG_OUTPUT_PORT Serial
 #include <ArduinoJson.h>
-
+#include <ArduinoOTA.h>
 
 extern "C" {
 #include "user_interface.h"
@@ -40,6 +40,9 @@ long delayBetweenMeasurement = 10000;
 long measurementJob = 0;
 long delayBetweenDisplayRotation = 5000;
 long displayRotationJob = 0;
+
+// OTA
+#define HOSTNAME "PANIOT-"
 
 void blick(int count, int _delay)
 {
@@ -193,6 +196,11 @@ void setup() {
   delay(2000);
   display.clear();
 
+  // Set Hostname.
+  String hostname(HOSTNAME);
+  hostname += String(ESP.getChipId(), HEX);
+  WiFi.hostname(hostname);
+
   SPIFFS.begin();
   {
     Dir dir = SPIFFS.openDir("/");
@@ -278,6 +286,34 @@ void setup() {
   server.begin();
   displayMessage("Server", "OK", 300);
   blick(1,100);
+
+  // Start OTA server.
+  ArduinoOTA.setHostname((const char *)hostname.c_str());
+  ArduinoOTA.onStart([]() {
+    displayMessage("Aktualiza.", "", 100); blick(1,10);
+    DBG_OUTPUT_PORT.println("Start updating ");
+  });
+  ArduinoOTA.onEnd([]() {
+    displayMessage("Aktualiza.", "100 %", 300); blick(1,10);
+    DBG_OUTPUT_PORT.println("\nEnd");
+  });
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+    displayMessage("Aktualiza.", String((progress / (total / 100)))+" %", 0);
+    DBG_OUTPUT_PORT.printf("Progress: %u%%\r", (progress / (total / 100)));
+  });
+  ArduinoOTA.onError([](ota_error_t error) {
+    DBG_OUTPUT_PORT.printf("Error[%u]: ", error);
+
+    if (error == OTA_AUTH_ERROR) displayMessage("Auth", "chyba", 100);
+    else if (error == OTA_BEGIN_ERROR) displayMessage("Begin", "chyba", 100);
+    else if (error == OTA_CONNECT_ERROR) displayMessage("Connect", "chyba", 100);
+    else if (error == OTA_RECEIVE_ERROR) displayMessage("Receive", "chyba", 100);
+    else if (error == OTA_END_ERROR) displayMessage("End", "chyba", 100); 
+    blick(3,300);
+  });
+  ArduinoOTA.begin();
+  displayMessage("OTA", "OK", 300);
+  blick(1,100);
 }
 
 
@@ -308,6 +344,7 @@ void measureLDR() {
 
 void loop() {
   server.handleClient();
+  ArduinoOTA.handle();
   
   if (displaySetup == 1) {
     displayMessage("Teplota", teplota, 100);
