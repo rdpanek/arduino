@@ -18,7 +18,7 @@
 extern "C" {
 #include "user_interface.h"
 }
-SSD1306 display(0x3c, D2, D1);
+SSD1306 display(0x3c, 2, 1);
 int16_t displayMarginLeft = 31;
 int16_t displayMarginTop = 13;
 String teplota = "00.00";
@@ -29,7 +29,7 @@ String rssi;
 String nazevZarizeni = "";
 const int ldrPin = A0;
 int ldr;
-const int ledPin = D8;
+const int ledPin = 8;
 String elasticsearchUri = "";
 int displaySetup = 1;
 int displayRotation = 1;

@@ -1,6 +1,6 @@
 #include <OneWire.h>
 
-OneWire  ds(D3);
+OneWire  ds(3);
 float celsius;
 
 float getTeplota() {
