@@ -3,6 +3,7 @@
 #include <DNSServer.h>            //Local DNS Server used for redirecting all requests to the configuration portal
 #include <ESP8266WebServer.h>     //Local WebServer used to serve the configuration portal
 #include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
+#include <ESP8266HTTPClient.h>
 
 
 WiFiManager wifiManager;
@@ -11,15 +12,15 @@ void configModeCallback (WiFiManager *myWiFiManager) {
   Serial.println(WiFi.softAPIP());
   Serial.print("Created config portal AP ");
   Serial.println(myWiFiManager->getConfigPortalSSID());
-  blick(3,100);
+  ledBlick(1,100);
 }
 
 void saveConfigCallback() {
   Serial.println("Save wifi configuration.");
-  blick(2,100);
+  ledBlick(1,100);
 }
 
-String deviceName = "PanIoT wifi-temp";
+String deviceName = "PanIoT-wifi-templomer";
 int configPortalTimeout = 120;
 
 void wifiManagerInit() {
@@ -29,9 +30,9 @@ void wifiManagerInit() {
   wifiManager.setCustomHeadElement("<style>html{filter: invert(100%); -webkit-filter: invert(100%);}</style>");
   wifiManager.setConfigPortalTimeout(configPortalTimeout);
   wifiManager.setSaveConfigCallback(saveConfigCallback);
-  if(!wifiManager.autoConnect("PanIoT wifi-temp")) {
+  if(!wifiManager.autoConnect("PanIoT-wifi-templomer")) {
     Serial.println("failed to connect and hit timeout");
-    blick(3,100);
+    ledBlick(3,100);
     ESP.reset();
     delay(1000);
   }

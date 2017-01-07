@@ -46,6 +46,22 @@ void readDS3231time(byte *second, byte *minute, byte *hour, byte *dayOfWeek, byt
     *year = bcdToDec(Wire.read());
 }
 
+String generateISO8601Date() {
+  byte second, minute, hour, dayOfWeek, dayOfMonth, month, year;
+  readDS3231time(&second, &minute, &hour, &dayOfWeek, &dayOfMonth, &month, &year);
+
+  String generateISO8601Date = ""+String(year)+"-"+String(month)+"-"+String(dayOfMonth);
+  return generateISO8601Date;
+}
+
+String generateISO8601DateTime() {
+  byte second, minute, hour, dayOfWeek, dayOfMonth, month, year;
+  readDS3231time(&second, &minute, &hour, &dayOfWeek, &dayOfMonth, &month, &year);
+
+  String generateISO8601Date = "20"+String(year)+"-"+String(month)+"-"+String(dayOfMonth)+" "+String(hour)+":"+String(minute)+":"+String(second);
+  return generateISO8601Date;
+}
+
 void displayTime(){
     byte second, minute, hour, dayOfWeek, dayOfMonth, month, year;
     // retrieve data from DS3231
@@ -93,4 +109,14 @@ void displayTime(){
             Serial.println("Saturday");
             break;
     }
+}
+
+String getDate (String dateFormat) {
+  if (dateFormat == "ISO8601Date") { // YYYY-MM-DD (eg 1997-07-16)
+    return generateISO8601Date();
+  } else if (dateFormat == "ISO8601DateTime") { // YYYY-MM-DDThh:mm:ss
+    return generateISO8601DateTime();
+  } else {
+    return generateISO8601Date();
+  }
 }

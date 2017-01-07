@@ -5,24 +5,26 @@
 #include "led.h"
 #include "wifiManagerSetup.h"
 
+String devicePlace = "pracovna";
+#include "elasticsearch.h"
+
 // the setup function runs once when you press reset or power the board
 void setup() {
   pinMode(ledPin, OUTPUT);
+  ledBlick(1,10);
   Serial.begin(115200);
   initRTC();
   displayTime();
   dallasDS.begin();
-  //wifiManagerInit();
+  wifiManagerInit();
 
 
   // vse nastaveno, startuje se
   Serial.println("-- start --");
-  blick(2,100);
+  ledBlick(2,100);
 }
 
 void loop() {
-  //dallasDS.requestTemperatures();
-  //Serial.println(dallasDS.getTempCByIndex(0));
-  blick(2,1000);
+  ds18b20ToElastic();
 }
 
