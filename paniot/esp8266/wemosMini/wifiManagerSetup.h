@@ -29,7 +29,7 @@ void wifiManagerInit() {
   wifiManager.setCustomHeadElement("<style>html{filter: invert(100%); -webkit-filter: invert(100%);}</style>");
   wifiManager.setConfigPortalTimeout(configPortalTimeout);
   wifiManager.setSaveConfigCallback(saveConfigCallback);
-  deviceName += "-" + String(ESP.getChipId(), HEX);
+  deviceName += "-" + deviceLocation + "-" + String(ESP.getChipId(), HEX);
   char* _deviceName = &deviceName[0];
   wifi_station_set_hostname(_deviceName);
   if(!wifiManager.autoConnect(_deviceName)) {
