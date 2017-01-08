@@ -30,6 +30,8 @@ String addESPInfo() {
   String jsonData = "";
   jsonData += "{\"freeHeap\": \""+String(ESP.getFreeHeap())+"\"";
   jsonData += ",\"resetReason\": \""+String(ESP.getResetReason())+"\"";
+  jsonData += ",\"deviceName\": \""+deviceName+"\"";
+  jsonData += ",\"deviceLocation\": \""+deviceLocation+"\"";
   jsonData += ",\"rssi\":\""+String(WiFi.RSSI())+"\"";
   jsonData += ",\"ip\":\""+String(WiFi.localIP())+"\"";
   jsonData += "}";
@@ -46,9 +48,15 @@ void webServerInit() {
     jsonData += ",\"/restart\": \"Restartuje zarizeni\"";
     jsonData += ",\"/factoryRestart\": \"Restartuje zarizeni do tovarniho nastaveni\"";
     jsonData += ",\"/getESPInfo\": \"Zakladni informace o zarizeni\"";
-    jsonData += ",\"/getPirState\": \"Vrati stav PIR senzoru\"";
-    jsonData += ",\"/allowBeep\": \"Povoli pipani\"";
-    jsonData += ",\"/disableBeep\": \"Zakaze pipani\"";
+    jsonData += ",\"/getStateRellay\": \"Vrati stav rele\"";
+    jsonData += ",\"/allowRellay\": \"Povoli pouziti rele pomoci REST-API. Pokud rele neni povoleno, je vracen http status code 202 a rele muze ovladat pouze vlastni zarizeni.\"";
+    jsonData += ",\"/disableRellay\": \"Zakaze pouziti rele\"";
+    jsonData += ",\""+onEndpoint+"\": \"Zapne rele\"";
+    jsonData += ",\""+offEndpoint+"\": \"Vypne rele\"";
+    jsonData += ",\"/allowAutoOff\": \"Povoli automaticke vypnuti rele, pokud neprijde po nastavenou dobu prikaz k zapnuti rele\"";
+    jsonData += ",\"/disableAutoOff\": \"Zakaze automaticke vypnuti rele. Rele bude zapnute do doby, nez bude prikazem vypnuto nebo pokud se nepovoli automaticke vypnuti\"";
+    jsonData += ",\"/getLimitAutoOff\": \"Vrati nastaveny limit pro automaticke vypnuti\"";
+    jsonData += ",\"/setLimitAutoOff?value=30\": \"Nastavy limit v ms pro automaticke vypnuti\"";
     jsonData += "}";
     server.send(200, "application/json", jsonData);
   } );
@@ -66,20 +74,54 @@ void webServerInit() {
   server.on ( "/getESPInfo", []() {
     server.send(200, "application/json", addESPInfo());
   } );
-  server.on ( "/allowBeep", []() {
-    allowBeep = true;
-    server.send(200, "application/json", "{\"allowBeep\": true}");
+  server.on ( "/allowRellay", []() {
+    allowRellay = true;
+    server.send(200, "application/json", "{\"allowRellay\": true}");
   } );
-  server.on ( "/disableBeep", []() {
-    allowBeep = false;
-    server.send(200, "application/json", "{\"allowBeep\": false}");
+  server.on ( "/disableRellay", []() {
+    allowRellay = false;
+    server.send(200, "application/json", "{\"allowRellay\": false}");
   } );
-  server.on ( "/getPirState", []() {
-    apiRelayState = false;
-    String _pirStateJson = "{\"pirStatus\": ";
-    _pirStateJson += pirState;
-    _pirStateJson += "}";
-    server.send(200, "application/json", _pirStateJson);
+  server.on ( "/allowAutoOff", []() {
+    allowAutoOff = true;
+    server.send(200, "application/json", "{\"allowAutoOff\": true}");
+  } );
+  server.on ( "/disableAutoOff", []() {
+    allowAutoOff = false;
+    server.send(200, "application/json", "{\"allowAutoOff\": false}");
+  } );
+  server.on ( "/getLimitAutoOff", []() {
+    server.send(200, "application/json", "{\"dellayMS\": "+String(dellayMS)+"}");
+  } );
+  server.on ( "/setLimitAutoOff", []() {
+    if(server.args() == 0) return server.send(500, "text/plain", "Chyba: musi se uvest hodnota v ms");
+    dellayMS = server.arg(0).toInt();
+    server.send(200, "application/json", "{\"dellayMS\": "+String(dellayMS)+"}");
+  } );
+  char* _onEndpoint = &onEndpoint[0];
+  server.on ( _onEndpoint, []() {
+    if (allowRellay) {
+      stateRellay = true;
+      lastOnMS = millis();
+      server.send(200, "application/json", "{\"stateRellay\": true}");
+    } else {
+      server.send(202, "application/json", "{\"stateRellay\": false}");
+    }
+  } );
+  char* _offEndpoint = &offEndpoint[0];
+  server.on ( _offEndpoint, []() {
+    if (allowRellay) {
+      stateRellay = false;
+      server.send(200, "application/json", "{\"stateRellay\": false}");
+    } else {
+      server.send(202, "application/json", "{\"stateRellay\": false}");
+    }
+  } );
+  server.on ( "/getStateRellay", []() {
+    String _stateRellayJson = "{\"stateRelay\": ";
+    _stateRellayJson += stateRellay;
+    _stateRellayJson += "}";
+    server.send(200, "application/json", _stateRellayJson);
   } );
   server.begin();
 }
