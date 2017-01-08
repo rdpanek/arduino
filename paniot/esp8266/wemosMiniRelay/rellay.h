@@ -1,5 +1,7 @@
 const int rellayPin = D1;
 bool allowRellay = true;
+String onEndpoint = "/rellayOn";
+String offEndpoint = "/rellayOff";
 
 void rellay(bool state)
 {
