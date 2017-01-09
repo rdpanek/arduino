@@ -14,6 +14,28 @@ DHT dht(dhtPin, DHTTYPE);
 // dht.begin();
 
 
+void logTemperatureToElasticsearch() {
+  String jsonData = "";
+  jsonData += "{\"location\": \""+deviceLocation+"\"";
+  jsonData += ",\"senzor\": \"dht22Temperature\"";
+  jsonData += ",\"val\":"+String(temperature);
+  jsonData += ",\"ntpDateTime\":\""+ntpDate+"T"+ntpTime+".000Z\"}";
+
+  sendToElasticsearch(jsonData);
+  jsonData = "";
+}
+
+void logHumidityToElasticsearch() {
+  String jsonData = "";
+  jsonData += "{\"location\": \""+deviceLocation+"\"";
+  jsonData += ",\"senzor\": \"dht22Humidity\"";
+  jsonData += ",\"val\":"+String(humidity);
+  jsonData += ",\"ntpDateTime\":\""+ntpDate+"T"+ntpTime+".000Z\"}";
+
+  sendToElasticsearch(jsonData);
+  jsonData = "";
+}
+
 void measureDht22() {
   if (millis() > (dellayTemperatureMS + lastOnMS)) { 
     lastOnMS = millis();
@@ -30,8 +52,7 @@ void measureDht22() {
   
     humidity = h;
     temperature = t;
+    logTemperatureToElasticsearch();
+    logHumidityToElasticsearch();
   }
-
-  Serial.println(humidity);
-  Serial.println(temperature);
 }

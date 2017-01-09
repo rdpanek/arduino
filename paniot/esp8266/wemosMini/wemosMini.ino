@@ -10,6 +10,8 @@ ESP8266WebServer server(80);
 #include "wifiManagerSetup.h"
 #include "ota.h"
 #include "pir.h"
+#include "ntp.h"
+#include "elasticsearch.h"
 #include "dht22.h"
 #include "webServer.h"
 
@@ -21,6 +23,19 @@ void setup() {
   initOTA();
 
   dht.begin();
+
+  // ntp
+  if(WiFi.status() == WL_CONNECTED) {
+    NTP.begin("pool.ntp.org", 1, true);
+    NTP.setInterval(63);
+  }
+
+  NTP.onNTPSyncEvent([](NTPSyncEvent_t event) {
+    ntpEvent = event;
+    syncEventTriggered = true;
+  });  
+
+
   // vse nastaveno, startuje se
   Serial.println("-- start --");
 }
@@ -28,6 +43,7 @@ void setup() {
 void loop() {
   server.handleClient();
   ArduinoOTA.handle();
+  syncNtp();
   measureDht22();
 }
 
