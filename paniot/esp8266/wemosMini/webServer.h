@@ -54,6 +54,10 @@ void webServerInit() {
     jsonData += ",\"/setLimitMeasure?value=30\": \"Nastavy interval mereni\"";
     jsonData += ",\"/getDeviceLocation\": \"Vrati umisteni zarizeni\"";
     jsonData += ",\"/setDeviceLocation?value=zahrada\": \"Nastavy nazev umisteni zarizeni\"";
+    jsonData += ",\"/allowSendToElasticsearch\": \"Povoli odesilani namerene teploty a vlhkosti do Elasticsearch\"";
+    jsonData += ",\"/disableSendToElasticsearch\": \"Zakaze odesilani dat do Elasticsearch\"";
+    jsonData += ",\"/getElasticsearchUri\": \"Vrati URI pro odesilani dat do Elasticsearch\"";
+    jsonData += ",\"/setElasticsearchUri?value=192.168.1.246:9200\": \"Nastavi uri pro odesilani dat do Elasticsearch\"";
     jsonData += "}";
     server.send(200, "application/json", jsonData);
   } );
@@ -92,6 +96,22 @@ void webServerInit() {
     if(server.args() == 0) return server.send(500, "text/plain", "Chyba: musi se uvest hodnota lower-CamelCase");
     deviceLocation = server.arg(0);
     server.send(200, "application/json", "{\"deviceLocation\": \""+String(deviceLocation)+"\"}");
+  } );
+  server.on ( "/allowSendToElasticsearch", []() {
+    allowSendToElasticsearch = true;
+    server.send(200, "application/json", "{\"allowSendToElasticsearch\": \""+String(allowSendToElasticsearch)+"\"}");
+  } );
+  server.on ( "/disableSendToElasticsearch", []() {
+    allowSendToElasticsearch = false;
+    server.send(200, "application/json", "{\"allowSendToElasticsearch\": \""+String(allowSendToElasticsearch)+"\"}");
+  } );
+  server.on ( "/getElasticsearchUri", []() {
+    server.send(200, "application/json", "{\"elasticsearchUri\": \""+String(elasticsearchUri)+"\"}");
+  } );
+  server.on ( "/setElasticsearchUri", []() {
+    if(server.args() == 0) return server.send(500, "text/plain", "Chyba: musi se uvest hodnota uri");
+    elasticsearchUri = server.arg(0);
+    server.send(200, "application/json", "{\"elasticsearchUri\": \""+String(elasticsearchUri)+"\"}");
   } );
   
   server.begin();
