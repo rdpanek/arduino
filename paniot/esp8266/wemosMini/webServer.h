@@ -8,10 +8,6 @@ void webServerInit() {
     jsonData += ",\"/restart\": \"Restartuje zarizeni\"";
     jsonData += ",\"/factoryRestart\": \"Restartuje zarizeni do tovarniho nastaveni\"";
     jsonData += ",\"/getESPInfo\": \"Zakladni informace o zarizeni\"";
-    jsonData += ",\"/getTemperature\": \"Vrati namerenou teplotu\"";
-    jsonData += ",\"/getHumidity\": \"Povoli namerenou vlhkost\"";
-    jsonData += ",\"/getLimitMeasure\": \"Vrati nastaveny interval mereni\"";
-    jsonData += ",\"/setLimitMeasure?value=30\": \"Nastavy interval mereni\"";
     jsonData += ",\"/getDeviceLocation\": \"Vrati umisteni zarizeni\"";
     jsonData += ",\"/setDeviceLocation?value=zahrada\": \"Nastavy nazev umisteni zarizeni\"";
     jsonData += ",\"/getDeviceName\": \"Vrati nazev zarizeni\"";
@@ -22,6 +18,10 @@ void webServerInit() {
     jsonData += ",\"/setElasticsearchUri?value=192.168.1.246:9200\": \"Nastavi uri pro odesilani dat do Elasticsearch\"";
     jsonData += ",\"/loadConfiguration\": \"Nahraje ulozene nastaveni\"";
     jsonData += ",\"/saveConfiguration\": \"Ulozi hodnotu promenych, ktere se daji nastavovat do konfiguracniho souboru\"";
+    jsonData += ",\"/getTemperature\": \"Vrati namerenou teplotu\"";
+    jsonData += ",\"/getHumidity\": \"Povoli namerenou vlhkost\"";
+    jsonData += ",\"/getLimitMeasure\": \"Vrati nastaveny interval mereni\"";
+    jsonData += ",\"/setLimitMeasure?value=30\": \"Nastavy interval mereni\"";
     jsonData += "}";
     server.send(200, "application/json", jsonData);
   } );
@@ -38,20 +38,6 @@ void webServerInit() {
   } );
   server.on ( "/getESPInfo", []() {
     server.send(200, "application/json", addESPInfo());
-  } );
-  server.on ( "/getTemperature", []() {
-    server.send(200, "application/json", "{\"temperature\": "+String(temperature)+"}");
-  } );
-  server.on ( "/getHumidity", []() {
-    server.send(200, "application/json", "{\"humidity\": "+String(humidity)+"}");
-  } );
-  server.on ( "/getLimitMeasure", []() {
-    server.send(200, "application/json", "{\"sht22DellayTemperatureMS\": "+String(sht22DellayTemperatureMS)+"}");
-  } );
-  server.on ( "/setLimitMeasure", []() {
-    if(server.args() == 0) return server.send(500, "text/plain", "Chyba: musi se uvest hodnota v ms");
-    sht22DellayTemperatureMS = server.arg(0).toInt();
-    server.send(200, "application/json", "{\"sht22DellayTemperatureMS\": "+String(sht22DellayTemperatureMS)+"}");
   } );
   server.on ( "/getDeviceLocation", []() {
     server.send(200, "application/json", "{\"deviceLocation\": \""+String(deviceLocation)+"\"}");
@@ -92,6 +78,20 @@ void webServerInit() {
   server.on ( "/saveConfiguration", []() {
     saveConfig();
     server.send(200, "application/json", "{\"configuration\":"+String(configuration)+"}");
+  } );
+   server.on ( "/getTemperature", []() {
+    server.send(200, "application/json", "{\"temperature\": "+String(temperature)+"}");
+  } );
+  server.on ( "/getHumidity", []() {
+    server.send(200, "application/json", "{\"humidity\": "+String(humidity)+"}");
+  } );
+  server.on ( "/getLimitMeasure", []() {
+    server.send(200, "application/json", "{\"sht22DellayTemperatureMS\": "+String(sht22DellayTemperatureMS)+"}");
+  } );
+  server.on ( "/setLimitMeasure", []() {
+    if(server.args() == 0) return server.send(500, "text/plain", "Chyba: musi se uvest hodnota v ms");
+    sht22DellayTemperatureMS = server.arg(0).toInt();
+    server.send(200, "application/json", "{\"sht22DellayTemperatureMS\": "+String(sht22DellayTemperatureMS)+"}");
   } );
   
   server.begin();
