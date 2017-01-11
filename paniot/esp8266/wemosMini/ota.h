@@ -5,6 +5,7 @@ void initOTA() {
   char* _deviceName = &deviceName[0];
   ArduinoOTA.setHostname(_deviceName);
   ArduinoOTA.onStart([]() {
+    SPIFFS.end();
     ledBlick(1,10);
     Serial.println("Start updating ");
   });

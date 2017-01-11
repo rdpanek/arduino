@@ -1,43 +1,3 @@
-bool apiRelayState = false;
-
-//format bytes
-String formatBytes(size_t bytes){
-  if (bytes < 1024){
-    return String(bytes)+"B";
-  } else if(bytes < (1024 * 1024)){
-    return String(bytes/1024.0)+"KB";
-  } else if(bytes < (1024 * 1024 * 1024)){
-    return String(bytes/1024.0/1024.0)+"MB";
-  } else {
-    return String(bytes/1024.0/1024.0/1024.0)+"GB";
-  }
-}
-
-String getContentType(String filename){
-  if(server.hasArg("download")) return "application/octet-stream";
-  else if(filename.endsWith(".htm")) return "text/html";
-  else if(filename.endsWith(".html")) return "text/html";
-  else if(filename.endsWith(".css")) return "text/css";
-  else if(filename.endsWith(".js")) return "application/javascript";
-  else if(filename.endsWith(".png")) return "image/png";
-  else if(filename.endsWith(".xml")) return "text/xml";
-  else if(filename.endsWith(".zip")) return "application/x-zip";
-  else if(filename.endsWith(".gz")) return "application/x-gzip";
-  return "text/plain";
-}
-
-String addESPInfo() {
-  String jsonData = "";
-  jsonData += "{\"freeHeap\": \""+String(ESP.getFreeHeap())+"\"";
-  jsonData += ",\"resetReason\": \""+String(ESP.getResetReason())+"\"";
-  jsonData += ",\"deviceName\": \""+deviceName+"\"";
-  jsonData += ",\"deviceLocation\": \""+deviceLocation+"\"";
-  jsonData += ",\"rssi\":\""+String(WiFi.RSSI())+"\"";
-  jsonData += ",\"ip\":\""+String(WiFi.localIP())+"\"";
-  jsonData += "}";
-  return jsonData;
-}
-
 void webServerInit() {
   server.onNotFound([](){
      server.send(404, "text/plain", "FileNotFound");
@@ -54,10 +14,14 @@ void webServerInit() {
     jsonData += ",\"/setLimitMeasure?value=30\": \"Nastavy interval mereni\"";
     jsonData += ",\"/getDeviceLocation\": \"Vrati umisteni zarizeni\"";
     jsonData += ",\"/setDeviceLocation?value=zahrada\": \"Nastavy nazev umisteni zarizeni\"";
+    jsonData += ",\"/getDeviceName\": \"Vrati nazev zarizeni\"";
+    jsonData += ",\"/setDeviceName?value=dht22\": \"Nastavy nazev zarizeni\"";
     jsonData += ",\"/allowSendToElasticsearch\": \"Povoli odesilani namerene teploty a vlhkosti do Elasticsearch\"";
     jsonData += ",\"/disableSendToElasticsearch\": \"Zakaze odesilani dat do Elasticsearch\"";
     jsonData += ",\"/getElasticsearchUri\": \"Vrati URI pro odesilani dat do Elasticsearch\"";
     jsonData += ",\"/setElasticsearchUri?value=192.168.1.246:9200\": \"Nastavi uri pro odesilani dat do Elasticsearch\"";
+    jsonData += ",\"/loadConfiguration\": \"Nahraje ulozene nastaveni\"";
+    jsonData += ",\"/saveConfiguration\": \"Ulozi hodnotu promenych, ktere se daji nastavovat do konfiguracniho souboru\"";
     jsonData += "}";
     server.send(200, "application/json", jsonData);
   } );
@@ -82,12 +46,12 @@ void webServerInit() {
     server.send(200, "application/json", "{\"humidity\": "+String(humidity)+"}");
   } );
   server.on ( "/getLimitMeasure", []() {
-    server.send(200, "application/json", "{\"dellayTemperatureMS\": "+String(dellayTemperatureMS)+"}");
+    server.send(200, "application/json", "{\"sht22DellayTemperatureMS\": "+String(sht22DellayTemperatureMS)+"}");
   } );
   server.on ( "/setLimitMeasure", []() {
     if(server.args() == 0) return server.send(500, "text/plain", "Chyba: musi se uvest hodnota v ms");
-    dellayTemperatureMS = server.arg(0).toInt();
-    server.send(200, "application/json", "{\"dellayTemperatureMS\": "+String(dellayTemperatureMS)+"}");
+    sht22DellayTemperatureMS = server.arg(0).toInt();
+    server.send(200, "application/json", "{\"sht22DellayTemperatureMS\": "+String(sht22DellayTemperatureMS)+"}");
   } );
   server.on ( "/getDeviceLocation", []() {
     server.send(200, "application/json", "{\"deviceLocation\": \""+String(deviceLocation)+"\"}");
@@ -96,6 +60,14 @@ void webServerInit() {
     if(server.args() == 0) return server.send(500, "text/plain", "Chyba: musi se uvest hodnota lower-CamelCase");
     deviceLocation = server.arg(0);
     server.send(200, "application/json", "{\"deviceLocation\": \""+String(deviceLocation)+"\"}");
+  } );
+  server.on ( "/getDeviceName", []() {
+    server.send(200, "application/json", "{\"deviceName\": \""+String(deviceName)+"\"}");
+  } );
+  server.on ( "/setDeviceName", []() {
+    if(server.args() == 0) return server.send(500, "text/plain", "Chyba: musi se uvest hodnota lower-CamelCase");
+    deviceName = server.arg(0);
+    server.send(200, "application/json", "{\"deviceName\": \""+String(deviceName)+"\"}");
   } );
   server.on ( "/allowSendToElasticsearch", []() {
     allowSendToElasticsearch = true;
@@ -112,6 +84,14 @@ void webServerInit() {
     if(server.args() == 0) return server.send(500, "text/plain", "Chyba: musi se uvest hodnota uri");
     elasticsearchUri = server.arg(0);
     server.send(200, "application/json", "{\"elasticsearchUri\": \""+String(elasticsearchUri)+"\"}");
+  } );
+  server.on ( "/loadConfiguration", []() {
+    loadConfig();
+    server.send(200, "application/json", "{\"configuration\":"+String(configuration)+"}");
+  } );
+  server.on ( "/saveConfiguration", []() {
+    saveConfig();
+    server.send(200, "application/json", "{\"configuration\":"+String(configuration)+"}");
   } );
   
   server.begin();

@@ -1,26 +1,34 @@
-String deviceName = "PanIoT-wifi-dht22";
-String deviceLocation = "loznice";
+String deviceName = "PanIoT-dht22";
+String deviceLocation = "noveZarizeni";
 
 #include <ESP8266WebServer.h>     //Local WebServer used to serve the configuration portal
 ESP8266WebServer server(80);
 
 // senzors
+#include "utility.h"
 #include "beep.h"
 #include "led.h"
 #include "wifiManagerSetup.h"
-#include "ota.h"
 #include "pir.h"
 #include "ntp.h"
 #include "elasticsearch.h"
 #include "dht22.h"
+#include "rellay.h"
+
+// always on the end
+#include "config.h"
+#include "ota.h"
 #include "webServer.h"
+
 
 // the setup function runs once when you press reset or power the board
 void setup() {
   Serial.begin(115200);
   wifiManagerInit();
   webServerInit();
+  fsInit();
   initOTA();
+  loadConfig();
 
   dht.begin();
 
@@ -34,7 +42,6 @@ void setup() {
     ntpEvent = event;
     syncEventTriggered = true;
   });  
-
 
   // vse nastaveno, startuje se
   Serial.println("-- start --");
