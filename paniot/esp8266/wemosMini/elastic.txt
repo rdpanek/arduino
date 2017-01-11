@@ -1,0 +1,31 @@
+{
+    "template": "paniot-*",
+    "mappings": {
+        "paniot": {
+            "dynamic": "strict",
+            "properties": {
+                "location": {
+                  "type": "keyword",
+                  "index": true
+                },
+                "senzor": {
+                  "type": "keyword",
+                  "index": true
+                },
+                "val": {
+                  "type": "float"
+                },
+                "heap": {
+                  "type": "integer"
+                },
+                "rssi": {
+                  "type": "integer"
+                },
+                "ntpDateTime": {
+                  "type": "date",
+                  "format": "dateOptionalTime"
+                }
+            }
+        }
+    }
+}

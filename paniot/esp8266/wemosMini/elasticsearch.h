@@ -1,4 +1,4 @@
-String elasticsearchUri = "192.168.1.246:9200";
+String elasticsearchUri = "ip:9200";
 String jsonData;
 bool allowSendToElasticsearch = false;
 
@@ -22,4 +22,5 @@ void sendToElasticsearch(String jsonData) {
       //ledBlick(2,100);
     }
   }
+  jsonData = "";
 }
