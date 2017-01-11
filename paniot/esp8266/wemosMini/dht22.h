@@ -2,8 +2,9 @@ const int dhtPin = D4;
 
 float humidity = 0;
 float temperature = 0;
-int dellayTemperatureMS = 2000;
+int sht22DellayTemperatureMS = 2000;
 int lastOnMS = 0;
+float _valueToLog = 0;
 
 #include "DHT.h"
 #define DHTTYPE DHT22   // DHT 22  (AM2302)
@@ -14,30 +15,29 @@ DHT dht(dhtPin, DHTTYPE);
 // dht.begin();
 
 
-void logTemperatureToElasticsearch() {
-  String jsonData = "";
-  jsonData += "{\"location\": \""+deviceLocation+"\"";
-  jsonData += ",\"senzor\": \"dht22Temperature\"";
-  jsonData += ",\"val\":"+String(temperature);
-  jsonData += ",\"ntpDateTime\":\""+ntpDate+"T"+ntpTime+".000Z\"}";
-
-  sendToElasticsearch(jsonData);
-  jsonData = "";
-}
-
-void logHumidityToElasticsearch() {
-  String jsonData = "";
-  jsonData += "{\"location\": \""+deviceLocation+"\"";
-  jsonData += ",\"senzor\": \"dht22Humidity\"";
-  jsonData += ",\"val\":"+String(humidity);
-  jsonData += ",\"ntpDateTime\":\""+ntpDate+"T"+ntpTime+".000Z\"}";
-
-  sendToElasticsearch(jsonData);
-  jsonData = "";
+void logToElasticsearch(String senzorType) {
+  if (senzorType == "temperature") {
+    _valueToLog = temperature;
+  } else {
+    _valueToLog = humidity;
+  }
+  
+  String dhtLog = "";
+  dhtLog += "{\"location\": \""+deviceLocation+"\"";
+  dhtLog += ",\"heap\":";
+  dhtLog += ESP.getFreeHeap();
+  dhtLog += ",\"rssi\":";
+  dhtLog += WiFi.RSSI();
+  dhtLog += ",\"senzor\":\""+String(senzorType)+"\"";
+  dhtLog += ",\"val\":";
+  dhtLog += _valueToLog;
+  dhtLog += ",\"ntpDateTime\":\""+ntpDate+"T"+ntpTime+".000Z\"}";
+  sendToElasticsearch(dhtLog);
+  dhtLog = "";
 }
 
 void measureDht22() {
-  if (millis() > (dellayTemperatureMS + lastOnMS)) { 
+  if (millis() > (sht22DellayTemperatureMS + lastOnMS)) { 
     lastOnMS = millis();
     float h = dht.readHumidity();
     float t = dht.readTemperature();
@@ -52,7 +52,7 @@ void measureDht22() {
   
     humidity = h;
     temperature = t;
-    logTemperatureToElasticsearch();
-    logHumidityToElasticsearch();
+    logToElasticsearch("temperature");
+    logToElasticsearch("humidity");
   }
 }
