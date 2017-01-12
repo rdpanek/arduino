@@ -1,4 +1,4 @@
-String deviceName = "PanIoT-dht22";
+String deviceName = "PanIoT-relay";
 String deviceLocation = "noveZarizeni";
 
 #include <ESP8266WebServer.h>     //Local WebServer used to serve the configuration portal
@@ -24,13 +24,13 @@ ESP8266WebServer server(80);
 // the setup function runs once when you press reset or power the board
 void setup() {
   Serial.begin(115200);
+  pinMode(rellayPin, OUTPUT);
   wifiManagerInit();
   webServerInit();
   fsInit();
   initOTA();
   loadConfig();
 
-  dht.begin();
 
   // ntp
   if(WiFi.status() == WL_CONNECTED) {
@@ -43,6 +43,11 @@ void setup() {
     syncEventTriggered = true;
   });  
 
+  stateRellay = true;
+  handleRellay();
+  delay(2000);
+  stateRellay = false;
+  handleRellay();
   // vse nastaveno, startuje se
   Serial.println("-- start --");
 }
@@ -51,6 +56,6 @@ void loop() {
   server.handleClient();
   ArduinoOTA.handle();
   syncNtp();
-  measureDht22();
+  handleRellay();
 }
 
