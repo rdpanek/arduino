@@ -20,6 +20,7 @@ void webServerInit() {
     jsonData += ",\"/saveConfiguration\": \"Ulozi hodnotu promenych, ktere se daji nastavovat do konfiguracniho souboru\"";
     jsonData += ",\"/getLimitMeasure\": \"Vrati nastaveny limit pro mereni teploty\"";
     jsonData += ",\"/setLimitMeasure?value=10000\": \"Nastavy limit v ms pro mereni teploty\"";
+    jsonData += ",\"/getTemperature\": \"Vrati namerenou teplotu\"";
     jsonData += "}";
     server.send(200, "application/json", jsonData);
   } );
@@ -84,6 +85,9 @@ void webServerInit() {
     if(server.args() == 0) return server.send(500, "text/plain", "Chyba: musi se uvest hodnota v ms");
     dallasDellayTemperatureMS = server.arg(0).toInt();
     server.send(200, "application/json", "{\"dallasDellayTemperatureMS\": "+String(dallasDellayTemperatureMS)+"}");
+  } );
+  server.on ( "/getTemperature", []() {
+    server.send(200, "application/json", "{\"dallasTemperature\": "+String(dallasTemperature)+"}");
   } );
   
   server.begin();
