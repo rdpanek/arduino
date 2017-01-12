@@ -1,4 +1,4 @@
-const int ledPin = D8;
+const int ledPin = D3;
 bool ledIndication = true;
 bool allowLed = true;
 

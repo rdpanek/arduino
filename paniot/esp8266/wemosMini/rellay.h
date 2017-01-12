@@ -7,6 +7,7 @@ String offEndpoint = "/rellayOff";
 int rellayDellayMS = 10000;
 int rellayLastOnMS = 0;
 bool rellayAllowAutoOff = true;
+int _valueToLog = 0;
 
 void autoOffRellay() {
   if (rellayAllowAutoOff) {
@@ -23,18 +24,18 @@ void logStateToElasticsearch() {
     _valueToLog = 0;
   }
   
-  String dhtLog = "";
-  dhtLog += "{\"location\": \""+deviceLocation+"\"";
-  dhtLog += ",\"heap\":";
-  dhtLog += ESP.getFreeHeap();
-  dhtLog += ",\"rssi\":";
-  dhtLog += WiFi.RSSI();
-  dhtLog += ",\"senzor\":\"rellay\"";
-  dhtLog += ",\"val\":";
-  dhtLog += _valueToLog;
-  dhtLog += ",\"ntpDateTime\":\""+ntpDate+"T"+ntpTime+".000Z\"}";
-  sendToElasticsearch(dhtLog);
-  dhtLog = "";
+  String rellayLog = "";
+  rellayLog += "{\"location\": \""+deviceLocation+"\"";
+  rellayLog += ",\"heap\":";
+  rellayLog += ESP.getFreeHeap();
+  rellayLog += ",\"rssi\":";
+  rellayLog += WiFi.RSSI();
+  rellayLog += ",\"senzor\":\"rellay\"";
+  rellayLog += ",\"val\":";
+  rellayLog += _valueToLog;
+  rellayLog += ",\"ntpDateTime\":\""+ntpDate+"T"+ntpTime+".000Z\"}";
+  sendToElasticsearch(rellayLog);
+  rellayLog = "";
 }
 
 void handleRellay()
