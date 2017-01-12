@@ -18,15 +18,8 @@ void webServerInit() {
     jsonData += ",\"/setElasticsearchUri?value=192.168.1.246:9200\": \"Nastavi uri pro odesilani dat do Elasticsearch\"";
     jsonData += ",\"/loadConfiguration\": \"Nahraje ulozene nastaveni\"";
     jsonData += ",\"/saveConfiguration\": \"Ulozi hodnotu promenych, ktere se daji nastavovat do konfiguracniho souboru\"";
-    jsonData += ",\"/getStateRellay\": \"Vrati stav rele\"";
-    jsonData += ",\"/allowRellay\": \"Povoli pouziti rele pomoci REST-API. Pokud rele neni povoleno, je vracen http status code 202 a rele muze ovladat pouze vlastni zarizeni.\"";
-    jsonData += ",\"/disableRellay\": \"Zakaze pouziti rele\"";
-    jsonData += ",\""+onEndpoint+"\": \"Zapne rele\"";
-    jsonData += ",\""+offEndpoint+"\": \"Vypne rele\"";
-    jsonData += ",\"/allowAutoOff\": \"Povoli automaticke vypnuti rele, pokud neprijde po nastavenou dobu prikaz k zapnuti rele\"";
-    jsonData += ",\"/disableAutoOff\": \"Zakaze automaticke vypnuti rele. Rele bude zapnute do doby, nez bude prikazem vypnuto nebo pokud se nepovoli automaticke vypnuti\"";
-    jsonData += ",\"/getLimitAutoOff\": \"Vrati nastaveny limit pro automaticke vypnuti\"";
-    jsonData += ",\"/setLimitAutoOff?value=30\": \"Nastavy limit v ms pro automaticke vypnuti\"";
+    jsonData += ",\"/getLimitMeasure\": \"Vrati nastaveny limit pro mereni teploty\"";
+    jsonData += ",\"/setLimitMeasure?value=10000\": \"Nastavy limit v ms pro mereni teploty\"";
     jsonData += "}";
     server.send(200, "application/json", jsonData);
   } );
@@ -84,54 +77,13 @@ void webServerInit() {
     saveConfig();
     server.send(200, "application/json", "{\"configuration\":"+String(configuration)+"}");
   } );
-  server.on ( "/allowRellay", []() {
-    allowRellay = true;
-    server.send(200, "application/json", "{\"allowRellay\": true}");
+  server.on ( "/getLimitMeasure", []() {
+    server.send(200, "application/json", "{\"dallasDellayTemperatureMS\": "+String(dallasDellayTemperatureMS)+"}");
   } );
-  server.on ( "/disableRellay", []() {
-    allowRellay = false;
-    server.send(200, "application/json", "{\"allowRellay\": false}");
-  } );
-  server.on ( "/allowAutoOff", []() {
-    rellayAllowAutoOff = true;
-    server.send(200, "application/json", "{\"allowAutoOff\": true}");
-  } );
-  server.on ( "/disableAutoOff", []() {
-    rellayAllowAutoOff = false;
-    server.send(200, "application/json", "{\"allowAutoOff\": false}");
-  } );
-  server.on ( "/getLimitAutoOff", []() {
-    server.send(200, "application/json", "{\"dellayMS\": "+String(rellayDellayMS)+"}");
-  } );
-  server.on ( "/setLimitAutoOff", []() {
+  server.on ( "/setLimitMeasure", []() {
     if(server.args() == 0) return server.send(500, "text/plain", "Chyba: musi se uvest hodnota v ms");
-    rellayDellayMS = server.arg(0).toInt();
-    server.send(200, "application/json", "{\"dellayMS\": "+String(rellayDellayMS)+"}");
-  } );
-  char* _onEndpoint = &onEndpoint[0];
-  server.on ( _onEndpoint, []() {
-    if (allowRellay) {
-      stateRellay = true;
-      rellayLastOnMS = millis();
-      server.send(200, "application/json", "{\"stateRellay\": true}");
-    } else {
-      server.send(202, "application/json", "{\"stateRellay\": false}");
-    }
-  } );
-  char* _offEndpoint = &offEndpoint[0];
-  server.on ( _offEndpoint, []() {
-    if (allowRellay) {
-      stateRellay = false;
-      server.send(200, "application/json", "{\"stateRellay\": false}");
-    } else {
-      server.send(202, "application/json", "{\"stateRellay\": false}");
-    }
-  } );
-  server.on ( "/getStateRellay", []() {
-    String _stateRellayJson = "{\"stateRelay\": ";
-    _stateRellayJson += stateRellay;
-    _stateRellayJson += "}";
-    server.send(200, "application/json", _stateRellayJson);
+    dallasDellayTemperatureMS = server.arg(0).toInt();
+    server.send(200, "application/json", "{\"dallasDellayTemperatureMS\": "+String(dallasDellayTemperatureMS)+"}");
   } );
   
   server.begin();

@@ -4,7 +4,7 @@
 #include "DialogPlain12.h"
 #include "DialogPlain10.h"
 
-SSD1306 display(0x3c, 2, 1);
+SSD1306 display(0x3c, D2, D1);
 int16_t displayMarginLeft = 31;
 int16_t displayMarginTop = 13;
 
