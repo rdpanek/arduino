@@ -1,17 +1,17 @@
-const int ledPin = D8;
+const int ldrPin = 0;
+int ldrValue = 0;
 
 void setup() {
   Serial.begin(115200);
-  pinMode(ledPin, OUTPUT);
 
 
   Serial.println("-- start --");
 }
 
 void loop() {
-  digitalWrite(ledPin, HIGH);
-  delay(1000);
-  digitalWrite(ledPin, LOW);
-  delay(1000);
+  ldrValue = analogRead(ldrPin);
+  
+  Serial.print("LDR: ");
+  Serial.println(ldrValue);
 } 
 
