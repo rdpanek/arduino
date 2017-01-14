@@ -1,4 +1,4 @@
-const int beepPin = D8;
+const int beepPin = D0;
 bool beepOn = true;
 bool allowBeep = true;
 

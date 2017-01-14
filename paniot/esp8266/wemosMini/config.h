@@ -35,7 +35,6 @@ void saveConfig() {
   JsonObject& json = jsonBuffer.createObject();
   json["deviceName"] = deviceName.c_str();
   json["deviceLocation"] = deviceLocation.c_str();
-  json["targetDeviceIp"] = targetDeviceIp.c_str();
   json["elasticsearchUri"] = elasticsearchUri.c_str();
   File configFile = SPIFFS.open("/config.json", "w+");
   if (!configFile) {
@@ -76,10 +75,6 @@ void loadConfig() {
   deviceLocation = json["deviceLocation"];
   Serial.print("deviceLocation: ");
   Serial.println(deviceLocation);
-
-  targetDeviceIp = json["targetDeviceIp"];
-  Serial.print("targetDeviceIp: ");
-  Serial.println(targetDeviceIp);
 
   elasticsearchUri = json["elasticsearchUri"];
   Serial.print("elasticsearchUri: ");

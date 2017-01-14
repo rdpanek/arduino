@@ -77,14 +77,7 @@ void webServerInit() {
     saveConfig();
     server.send(200, "application/json", "{\"configuration\":"+String(configuration)+"}");
   } );
-    server.on ( "/getTargetDeviceIp", []() {
-    server.send(200, "application/json", "{\"targetDeviceIp\": \""+String(targetDeviceIp)+"\"}");
-  } );
-  server.on ( "/setTargetDeviceIp", []() {
-    if(server.args() == 0) return server.send(500, "text/plain", "Chyba: musi se uvest hodnota ip");
-    targetDeviceIp = server.arg(0);
-    server.send(200, "application/json", "{\"targetDeviceIp\": \""+String(targetDeviceIp)+"\"}");
-  } );
+
   
   server.begin();
 }

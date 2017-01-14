@@ -1,0 +1,29 @@
+{
+    "template": "paniot-webtester-*",
+    "mappings": {
+        "paniot-webtester": {
+            "dynamic": "strict",
+            "properties": {
+                "uri": {
+                  "type": "text",
+                  "index": true
+                },
+                "expString": {
+                  "type": "text",
+                  "index": true
+                },
+                "statusCode": {
+                  "type": "text",
+                  "index": true
+                },
+                "expStatusCode": {
+                  "type": "integer"
+                },
+                "ntpDateTime": {
+                  "type": "date",
+                  "format": "dateOptionalTime"
+                }
+            }
+        }
+    }
+}
