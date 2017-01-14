@@ -77,7 +77,7 @@ void loop() {
 
   existUri("http://192.168.1.1/", 200, "<title>Administrační rozhraní routeru Turris</title>", multiLed1);
   existUri("http://79.98.159.232:85/", 200, "<TITLE>Archer C7</TITLE>", multiLed2);
-  existUri("http://79.98.159.232:88/", 200, "none", multiLed3);
+  existUri("http://79.98.159.232:84/", 401, "<title>401 - Unauthorized</title>", multiLed3);
   existUri("http://79.98.159.232:86/", 401, "<title>401 - Unauthorized</title>", multiLed4);
 
   Serial.println(ESP.getFreeHeap());
