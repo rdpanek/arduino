@@ -1,10 +1,18 @@
 #include <ESP8266WiFi.h>
 #include <DNSServer.h>
 #include <WiFiManager.h>
-#include "led.h" // zpristupni knihovnu led
+#include "led.h"
+#include "SSD1306.h"
+#include "DialogPlain14Bold.h"
+#include "DialogPlain12.h"
+#include "DialogPlain10.h"
 
+SSD1306 display(0x3c, D2, D1);
 
 String nazevZarizeni = "Muj-teplotni-senzor";
+int16_t displayMarginLeft = 31;
+int16_t displayMarginTop = 13;
+char ipAdresa[16];
 
 
 WiFiManager wifiManager;
@@ -16,6 +24,7 @@ void configModeCallback (WiFiManager *myWiFiManager) {
   
   // blikne jednou - ceka se na zadani uzivatele
   ledBlick(1, 300);
+  displayMessage(String("Cekam"), String("192.168.4.1"), 200);
 }
 
 void saveConfigCallback() {
@@ -23,6 +32,22 @@ void saveConfigCallback() {
   
   // blikne dvakrat - nastaveni wifi ulozeno
   ledBlick(2, 300);
+  displayMessage(String("Wi-Fi"), String("Ulozeno"), 200);
+}
+
+void mainFrame() {
+  display.drawRect(displayMarginLeft + 1, displayMarginTop + 3, 64, 48);
+}
+
+void displayMessage(String firstLine, String secondLine, int _delay) {
+  //mainFrame();
+  display.setFont(Dialog_plain_10);
+  display.drawString(64, displayMarginTop + 10, firstLine);
+  display.setFont(Dialog_bold_14);
+  display.drawString(64, displayMarginTop + 25, secondLine);
+  display.display();
+  delay(_delay);
+  display.clear();
 }
 
 int configPortalTimeout = 120;
@@ -30,10 +55,19 @@ int configPortalTimeout = 120;
 void setup() {
   Serial.begin(115200);
 
-  // definovani pinu kam je pripojena LED dioda
   pinMode(ledPin, OUTPUT);
+
+  display.init();
+  display.setTextAlignment(TEXT_ALIGN_CENTER);
+  display.flipScreenVertically();
+  display.displayOn();
+  display.setFont(Dialog_bold_14);
+  display.drawString(64, displayMarginTop + 25, "Wi-Fi");
+  display.display();
+  delay(2000);
+  display.clear(); 
   
-  wifiManager.resetSettings();
+  //wifiManager.resetSettings();
   wifiManager.setDebugOutput(true);
   wifiManager.setAPCallback(configModeCallback);
   wifiManager.setCustomHeadElement("<style>html{filter: invert(100%); -webkit-filter: invert(100%);}</style>");
@@ -45,20 +79,21 @@ void setup() {
   if(!wifiManager.autoConnect(_nazevZarizeni)) {
     Serial.println("failed to connect and hit timeout");
 
-    // blikne trikrat - vyprsel casovy limit
     ledBlick(3, 300);
+    displayMessage(String("Wi-Fi"), String("Reset"), 200);
     
     ESP.reset();
     delay(1000);
   }
 
+  IPAddress ip = WiFi.localIP();
+  sprintf(ipAdresa, "%d.%d", ip[2], ip[3]);
   Serial.println("-- start --");
 }
 
 void loop() {
 
-  // proces konfigurace wifi je hotovy, ted bude dioda blikat dokola
-  ledBlick(1, 50);
+  displayMessage(String(WiFi.RSSI())+" dBm", ipAdresa, 200);
 
 } 
 
