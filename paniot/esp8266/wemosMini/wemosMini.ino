@@ -6,6 +6,8 @@
 #include "DialogPlain14Bold.h"
 #include "DialogPlain12.h"
 #include "DialogPlain10.h"
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
 SSD1306 display(0x3c, D2, D1);
 
@@ -13,6 +15,13 @@ String nazevZarizeni = "Muj-teplotni-senzor";
 int16_t displayMarginLeft = 31;
 int16_t displayMarginTop = 13;
 char ipAdresa[16];
+krok = 0;
+const int ldrPin = 0;
+const int pinCidlaDS = D3;
+float dallasTemperature = 0;
+
+OneWire oneWireDS(pinCidlaDS);
+DallasTemperature dallasDS(&oneWireDS);
 
 
 WiFiManager wifiManager;
@@ -92,8 +101,23 @@ void setup() {
 }
 
 void loop() {
+  ++krok;
+  if ( krok == 1 ) {
+    displayMessage("RSSI", String(WiFi.RSSI())+" dBm", 200);
+  } else if ( krok == 2 ) {
+    displayMessage("IP", String(ipAdresa), 200);
+  } else if ( krok == 3 ) {
+    displayMessage("LDR", String(analogRead(ldrPin)), 200);
+  } else if ( krok == 4 ) {
+    displayMessage("Free Heap", String(ESP.getFreeHeap()), 200);
+  } else if ( krok == 5 ) {
+    dallasDS.requestTemperatures();
+    dallasTemperature = dallasDS.getTempCByIndex(0);
+    displayMessage("Teplota", String(dallasTemperature)+" °C", 200);
+  }
 
-  displayMessage(String(WiFi.RSSI())+" dBm", ipAdresa, 200);
+  if ( krok == 5 ) krok = 0;
 
+  delay(4000);
 } 
 
