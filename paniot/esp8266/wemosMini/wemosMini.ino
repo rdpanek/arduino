@@ -1,69 +1,61 @@
-#include "SSD1306.h"
-#include "DialogPlain14Bold.h"
-#include "DialogPlain12.h"
-#include "DialogPlain10.h"
-#include <OneWire.h>
-#include <DallasTemperature.h>
-
-SSD1306 display(0x3c, D2, D1);
+#include <ESP8266WiFi.h>          // Knihovna pro praci s WIFI
+#include <DNSServer.h>            // Local DNS Server presmeruje vsechny requesty do configuration portal
+#include <WiFiManager.h>          // Knihovna pro praci s WIFI
 
 
-int16_t displayMarginLeft = 31;
-int16_t displayMarginTop = 13;
-const int ledPin = D8;
-const int pinCidlaDS = D3;
-float dallasTemperature = 0;
+String nazevZarizeni = "Muj-teplotni-senzor";
 
-OneWire oneWireDS(pinCidlaDS);
-DallasTemperature dallasDS(&oneWireDS);
 
-void mainFrame() {
-  display.drawRect(displayMarginLeft + 1, displayMarginTop + 3, 64, 48);
+WiFiManager wifiManager;
+void configModeCallback (WiFiManager *myWiFiManager) {
+  Serial.println("Entered config mode");
+  Serial.println(WiFi.softAPIP());
+  Serial.print("Created config portal AP ");
+  Serial.println(myWiFiManager->getConfigPortalSSID());
 }
 
-void displayMessage(String firstLine, String secondLine, int _delay) {
-  mainFrame();
-  display.setFont(Dialog_plain_10);
-  display.drawString(64, displayMarginTop + 10, firstLine);
-  display.setFont(Dialog_bold_14);
-  display.drawString(64, displayMarginTop + 25, secondLine);
-  display.display();
-  delay(_delay);
-  display.clear();
+void saveConfigCallback() {
+  Serial.println("Save wifi configuration.");
 }
 
+int configPortalTimeout = 120;
 
 void setup() {
   Serial.begin(115200);
-  pinMode(ledPin, OUTPUT);
 
-  display.init();
-  display.setTextAlignment(TEXT_ALIGN_CENTER);
-  display.flipScreenVertically();
-  display.displayOn();
-  display.setFont(Dialog_bold_14);
-  display.drawString(64, displayMarginTop + 25, "---");
-  display.display();
-  delay(2000);
-  display.clear(); 
+  // vymaze nastaveni z EEPROM - pri beznem pouzivani, nechat zakomentovane
+  // wifiManager.resetSettings();
+
+  // bude vypisovat do monitoru to co dela
+  wifiManager.setDebugOutput(true);
+
+  // Nastaveni
+  wifiManager.setAPCallback(configModeCallback);
+  
+  // upravi html nastavovaciho formulare
+  wifiManager.setCustomHeadElement("<style>html{filter: invert(100%); -webkit-filter: invert(100%);}</style>");
+
+  // Limit, po ktery se musi zarizeni pripojit do wifi, nebo telefon k zarizeni - po prekroceni dojde k restartu
+  wifiManager.setConfigPortalTimeout(configPortalTimeout);
+  
+  // Udalost, pri ulozeni nastaveni wifi
+  wifiManager.setSaveConfigCallback(saveConfigCallback);
+
+  // nazev zarizeni
+  char* _nazevZarizeni = &nazevZarizeni[0];
+  wifi_station_set_hostname(_nazevZarizeni);
+  
+  // pokud se nezdari pripojit ve stanoveny limit - zarizeni bude restartovano
+  if(!wifiManager.autoConnect(_nazevZarizeni)) {
+    Serial.println("failed to connect and hit timeout");
+    ESP.reset();
+    delay(1000);
+  }
 
   Serial.println("-- start --");
 }
 
 void loop() {
 
-  dallasDS.requestTemperatures();
-  dallasTemperature = dallasDS.getTempCByIndex(0);
-  
-  Serial.print("Teplota: ");
-  Serial.print(dallasTemperature);
-  Serial.println(" °C");
-
-  if (dallasTemperature >= 30) digitalWrite(ledPin, HIGH);
-  if (dallasTemperature < 30) digitalWrite(ledPin, LOW);
-
-  displayMessage(String("Teplota"), String((int)dallasTemperature), 200);
-
-  delay(2000);
 } 
 
