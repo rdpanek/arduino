@@ -1,5 +1,6 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
+const int ledPin = D8;
 
 const int pinCidlaDS = D3;
 float dallasTemperature = 0;
@@ -11,6 +12,8 @@ DallasTemperature dallasDS(&oneWireDS);
 
 void setup() {
   Serial.begin(115200);
+  pinMode(ledPin, OUTPUT);
+  
 
   Serial.println("-- start --");
 }
@@ -22,6 +25,9 @@ void loop() {
   Serial.print("Teplota: ");
   Serial.print(dallasTemperature);
   Serial.println(" °C");
+
+  if (dallasTemperature >= 30) digitalWrite(ledPin, HIGH);
+  if (dallasTemperature < 30) digitalWrite(ledPin, LOW);
 
   delay(2000);
 } 
