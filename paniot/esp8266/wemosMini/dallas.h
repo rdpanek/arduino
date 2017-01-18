@@ -36,6 +36,8 @@ void measureDallas() {
     dallasLastOnMS = millis();
     dallasDS.requestTemperatures();
     dallasTemperature = dallasDS.getTempCByIndex(0);
+    Blynk.virtualWrite(10, dallasTemperature); // for value
+    Blynk.virtualWrite(11, dallasTemperature); // for graph
     logDallasToElasticsearch();
   }
 }

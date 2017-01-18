@@ -1,8 +1,15 @@
 String deviceName = "PanIoT-temperature";
-String deviceLocation = "pracovna";
+String deviceLocation = "kuchyn";
 
 #include <ESP8266WebServer.h>     //Local WebServer used to serve the configuration portal
 ESP8266WebServer server(80);
+
+// Blynk
+#define BLYNK_PRINT Serial // Comment this out to disable prints and save space
+#include <BlynkSimpleEsp8266.h>
+char auth[] = "";
+int blynkDellayMs = 1000; 
+int blynkLastOnMS = 0;
 
 // senzors
 #include "utility.h"
@@ -45,6 +52,7 @@ void setup() {
   });  
 
   oledInit();
+  Blynk.config(auth);
 
   // vse nastaveno, startuje se
   Serial.println("-- start --");
@@ -54,9 +62,17 @@ void loop() {
   server.handleClient();
   ArduinoOTA.handle();
   syncNtp();
+  Blynk.run();
   
   measureDallas();
   measureLDR();
   displayMessage(String(WiFi.RSSI())+" dBm", String((int)dallasTemperature)+" °C", 100);
+
+  if (millis() > (blynkDellayMs + blynkLastOnMS)) {
+    blynkLastOnMS =  millis();
+    Blynk.virtualWrite(1, WiFi.RSSI());
+    Blynk.virtualWrite(2, ESP.getFreeHeap());
+    Serial.println("send to blynk");
+  }
 }
 
