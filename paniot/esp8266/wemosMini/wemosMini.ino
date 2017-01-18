@@ -2,6 +2,7 @@
 #include <DNSServer.h>
 #include <WiFiManager.h>
 #include <ESP8266WebServer.h>
+#include <ESP8266HTTPClient.h>
 
 ESP8266WebServer server(80);
 String nazevZarizeni = "Muj-teplotni-senzor";
@@ -13,6 +14,7 @@ void configModeCallback (WiFiManager *myWiFiManager) {
 }
 
 int configPortalTimeout = 120;
+String uri = "http://private-e5a9-tr1.apiary-mock.com/api/v2/results/list/name/date";
 
 
 void setup() {
@@ -60,5 +62,24 @@ void setup() {
 
 void loop() {
   server.handleClient();
+
+  if(WiFi.status() == WL_CONNECTED) {
+    Serial.println("Posilam pozadavek");
+    HTTPClient http;
+    http.begin(uri);
+    http.addHeader("Content-Type","application/json; charset=UTF-8");
+    int httpCode = http.GET();
+    Serial.println(http.getString());
+    if (httpCode > 300) {
+      Serial.println("HTTP Code: "+httpCode);
+    } else {
+      Serial.println(http.getString());  
+    }
+    http.end();
+  } else {
+    Serial.println("Wifi neni pripojeno");
+  }
+
+  delay(2000);
 } 
 
