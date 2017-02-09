@@ -11,12 +11,9 @@ void sendGetRequest(String endpoint) {
     Serial.print("httpString: ");
     Serial.println(http.getString());
     if (httpCode > 300 || httpCode < 200) {
-      ledBlick(3,100);
     } else {
-      ledBlick(1,10);  
     }
     http.end();
   } else {
-    ledBlick(2,100);
   }
 }

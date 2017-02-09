@@ -12,14 +12,11 @@ void sendToElasticsearch(String jsonData) {
       Serial.println(httpCode);
       Serial.println(http.getString());
       if (httpCode > 300) {
-        ledBlick(3,100);
       } else {
-        ledBlick(1,10);  
       }
       jsonData = "";
       http.end();
     } else {
-      ledBlick(2,100);
     }
   }
   jsonData = "";

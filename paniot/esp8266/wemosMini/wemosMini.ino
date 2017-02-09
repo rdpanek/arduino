@@ -6,9 +6,7 @@ ESP8266WebServer server(80);
 
 // senzors
 #include "utility.h"
-#include "oled.h"
-#include "beep.h"
-#include "led.h"
+#include "RGB.h"
 #include "wifiManagerSetup.h"
 #include "ntp.h"
 #include "elasticsearch.h"
@@ -25,8 +23,7 @@ ESP8266WebServer server(80);
 // the setup function runs once when you press reset or power the board
 void setup() {
   Serial.begin(115200);
-  pinMode(ledPin, OUTPUT);
-  pinMode(beepPin, OUTPUT);
+  initRGB();
   wifiManagerInit();
   webServerInit();
   fsInit();
