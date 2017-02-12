@@ -69,19 +69,19 @@ void loadConfig() {
     Serial.println("Failed to parse config file");
   }
 
-  deviceName = json["deviceName"];
+  deviceName = json["deviceName"].as<String>();
   Serial.print("deviceName: ");
   Serial.println(deviceName);
 
-  deviceLocation = json["deviceLocation"];
+  deviceLocation = json["deviceLocation"].as<String>();
   Serial.print("deviceLocation: ");
   Serial.println(deviceLocation);
 
-  targetDeviceIp = json["targetDeviceIp"];
+  targetDeviceIp = json["targetDeviceIp"].as<String>();
   Serial.print("targetDeviceIp: ");
   Serial.println(targetDeviceIp);
 
-  elasticsearchUri = json["elasticsearchUri"];
+  elasticsearchUri = json["elasticsearchUri"].as<String>();
   Serial.print("elasticsearchUri: ");
   Serial.println(elasticsearchUri);
   

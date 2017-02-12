@@ -1,5 +1,5 @@
-String deviceName = "PanIoT-pir";
-String deviceLocation = "pracovna";
+String deviceName = "PanIoT-pir2rgb";
+String deviceLocation = "";
 
 #include <ESP8266WebServer.h>     //Local WebServer used to serve the configuration portal
 ESP8266WebServer server(80);
@@ -24,6 +24,7 @@ ESP8266WebServer server(80);
 void setup() {
   Serial.begin(115200);
   initRGB();
+  ledBlick(1,10,"green");
   wifiManagerInit();
   webServerInit();
   fsInit();
@@ -45,6 +46,7 @@ void setup() {
 
   // vse nastaveno, startuje se
   Serial.println("-- start --");
+  ledBlick(2,50, "green");
 }
 
 void loop() {

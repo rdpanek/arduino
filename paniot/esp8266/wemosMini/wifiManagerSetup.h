@@ -14,10 +14,12 @@ void configModeCallback (WiFiManager *myWiFiManager) {
   Serial.println(WiFi.softAPIP());
   Serial.print("Created config portal AP ");
   Serial.println(myWiFiManager->getConfigPortalSSID());
+  ledBlick(1,10,"green");
 }
 
 void saveConfigCallback() {
   Serial.println("Save wifi configuration.");
+  ledBlick(2,10,"green");
 }
 
 int configPortalTimeout = 120;
@@ -34,6 +36,7 @@ void wifiManagerInit() {
   wifi_station_set_hostname(_deviceName);
   if(!wifiManager.autoConnect(_deviceName)) {
     Serial.println("failed to connect and hit timeout");
+    ledBlick(1,100,"red");
     ESP.reset();
     delay(1000);
   }

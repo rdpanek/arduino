@@ -25,11 +25,13 @@ void webServerInit() {
   } );
     server.on ( "/restart", []() {
     server.send ( 200, "text/plain", "Zarizeni bude restartovano." );
+    ledBlick(1,10,"green");
     ESP.reset();
     delay(1000);
   } );
   server.on ( "/factoryRestart", []() {
     server.send ( 200, "text/plain", "Bude nastaveno tovarni nastaveni. Vyhledejte wifi pojmenovanou " + deviceName );
+    ledBlick(1,10,"red");
     WiFi.disconnect(true);
     ESP.reset();
     delay(1000);

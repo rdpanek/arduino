@@ -28,15 +28,14 @@ void logPirStateToElasticsearch() {
 
 int isPirActive() {
   if(digitalRead(pirPin) == HIGH) {
-    Serial.println("ANO");
+    ledBlick(1,10,"white");
     pirState = true;
     if (millis() > (pirDellayMS + pirLastOnMS)) {
       pirLastOnMS = millis();
       sendGetRequest(onEndpoint);
-      logPirStateToElasticsearch();
+      //logPirStateToElasticsearch();
     }
   }  else {
-    Serial.println("NE");
     pirState = false;
   }
 }
