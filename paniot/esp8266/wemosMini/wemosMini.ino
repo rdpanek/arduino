@@ -1,58 +1,71 @@
-String deviceName = "PanIoT-pir2rgb";
-String deviceLocation = "";
+#include "FastLED.h"
 
-#include <ESP8266WebServer.h>     //Local WebServer used to serve the configuration portal
-ESP8266WebServer server(80);
+#define NUM_LEDS 1
+int BRIGHTNESS = 0;
+bool up = true;
 
-// senzors
-#include "utility.h"
-#include "RGB.h"
-#include "wifiManagerSetup.h"
-#include "ntp.h"
-#include "elasticsearch.h"
-#include "deviceRequest.h"
-#include "rellay.h"
-#include "pir.h"
+#define DATA_PIN D2
 
-// always on the end
-#include "config.h"
-#include "ota.h"
-#include "webServer.h"
+CRGB leds[NUM_LEDS];
+
+void turnOffRGB() {
+  leds[0] = CRGB::Black;
+  FastLED.show();  
+}
+
+void initRGB() { 
+  FastLED.addLeds<WS2812B, DATA_PIN, RGB>(leds, NUM_LEDS);
+  FastLED.setBrightness(  BRIGHTNESS );
+  turnOffRGB();
+}
+
+void ledBlick(int count, int _delay, String color)
+{
+  FastLED.setBrightness(  BRIGHTNESS );
+  
+  for (int _count = 0; _count < count; _count++) {
+     if ( color == "blue") { leds[0] = CRGB::Red; }
+      if ( color == "green") { leds[0] = CRGB::Blue; }
+      if ( color == "white") { leds[0] = CRGB::White; }
+      if ( color == "red") { leds[0] = CRGB::Green; }
+      FastLED.show(); 
+      delay(_delay);
+      leds[0] = CRGB::Black;
+      FastLED.show(); 
+      delay(_delay);
+    }
+}
 
 
-// the setup function runs once when you press reset or power the board
-void setup() {
-  Serial.begin(115200);
-  initRGB();
-  ledBlick(1,10,"green");
-  wifiManagerInit();
-  webServerInit();
-  fsInit();
-  initOTA();
-  loadConfig();
+void pulseRGB() { 
 
+  FastLED.setBrightness(  BRIGHTNESS );
+  //leds[0] = CRGB::Red; // blue
+  //leds[0] = CRGB::Blue; // green
+  //leds[0] = CRGB::White; // white
+  //leds[0] = CRGB::Green; // red
+  leds[0] = CRGB::Green; // red
+  FastLED.show();
+  delay(10);
 
-  // ntp
-  if(WiFi.status() == WL_CONNECTED) {
-    NTP.begin("pool.ntp.org", 1, true);
-    NTP.setInterval(63);
+  if (up) {
+    BRIGHTNESS++; 
+  } else {
+    BRIGHTNESS--;
   }
 
-  NTP.onNTPSyncEvent([](NTPSyncEvent_t event) {
-    ntpEvent = event;
-    syncEventTriggered = true;
-  });  
-
-
-  // vse nastaveno, startuje se
-  Serial.println("-- start --");
-  ledBlick(2,50, "green");
+  if (BRIGHTNESS == 128) {
+    up = false; 
+  } else if (BRIGHTNESS == 0) {
+    up = true;
+  }
+}
+void setup() {
+  initRGB();
 }
 
 void loop() {
-  server.handleClient();
-  ArduinoOTA.handle();
-  syncNtp();
-  isPirActive();
+  pulseRGB();
+  delay(50);
 }
 
